@@ -172,7 +172,7 @@ export function RegisterForm() {
             <Link href="/privacy" className="text-primary hover:underline">Política de Privacidade</Link>.
           </p>
 
-          <Button type="submit" className="w-full" variant="gold" loading={loading} disabled={!!loadingSocial}>
+          <Button type="submit" className="w-full" variant="neon" loading={loading} disabled={!!loadingSocial}>
             Criar conta grátis 🏆
           </Button>
         </form>

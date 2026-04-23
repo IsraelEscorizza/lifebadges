@@ -45,7 +45,7 @@ export function FeedClient({ items, currentUserId }: FeedClientProps) {
           Adicione amigos ou registre sua primeira conquista para começar!
         </p>
         <div className="flex gap-2 justify-center mt-4">
-          <Link href="/achievements" className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-semibold hover:bg-amber-600 transition-colors">
+          <Link href="/achievements" className="px-4 py-2 bg-neon text-white rounded-lg text-sm font-semibold hover:bg-neon-500 transition-colors">
             Ver conquistas
           </Link>
           <Link href="/friends" className="px-4 py-2 border border-border rounded-lg text-sm font-semibold hover:bg-accent transition-colors">
@@ -83,7 +83,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
           <Link href={`/profile/${item.user.id}`}>
             <Avatar className="h-10 w-10">
               <AvatarImage src={item.user.image ?? ""} alt={item.user.name ?? ""} />
-              <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">{initials}</AvatarFallback>
+              <AvatarFallback className="bg-secondary text-neon-500 text-xs">{initials}</AvatarFallback>
             </Avatar>
           </Link>
           <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
             </p>
           </div>
           {item.status === "EARNED" && (
-            <span className="text-amber-500 text-lg animate-trophy-glow">🏆</span>
+            <span className="text-neon text-lg animate-neon-pulse">🏆</span>
           )}
         </div>
 
@@ -138,7 +138,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
         )}
 
         {item.status === "EARNED" && (
-          <div className="flex items-center gap-2 text-sm font-semibold text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 text-sm font-semibold text-neon-500 bg-secondary rounded-lg px-3 py-2">
             <Trophy className="h-4 w-4" />
             Troféu conquistado! Validado por {validates.length} pessoas.
           </div>

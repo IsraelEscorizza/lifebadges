@@ -95,9 +95,9 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
     <div className="pt-4 space-y-5">
       {/* Profile header */}
       <div className="text-center space-y-3">
-        <Avatar className="h-20 w-20 mx-auto ring-4 ring-amber-200">
+        <Avatar className="h-20 w-20 mx-auto ring-4 ring-neon/30">
           <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
-          <AvatarFallback className="text-2xl bg-amber-100 text-amber-700">{initials}</AvatarFallback>
+          <AvatarFallback className="text-2xl bg-secondary text-neon-500">{initials}</AvatarFallback>
         </Avatar>
 
         <div>
@@ -116,7 +116,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
         {/* Stats */}
         <div className="flex justify-center gap-8">
           <div className="text-center">
-            <p className="text-2xl font-black text-amber-500">{earned.length}</p>
+            <p className="text-2xl font-black text-neon">{earned.length}</p>
             <p className="text-xs text-muted-foreground">Troféus</p>
           </div>
           <div className="text-center">
@@ -135,7 +135,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
         {!isOwner && (
           <div className="flex justify-center gap-2">
             {friendshipStatus === "none" && (
-              <Button variant="gold" size="sm" className="gap-1.5" onClick={handleFriendAction} loading={isPending}>
+              <Button variant="neon" size="sm" className="gap-1.5" onClick={handleFriendAction} loading={isPending}>
                 <UserPlus className="h-4 w-4" /> Adicionar amigo
               </Button>
             )}
@@ -145,7 +145,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
               </Button>
             )}
             {friendshipStatus === "received" && (
-              <Button variant="gold" size="sm" className="gap-1.5" onClick={handleFriendAction} loading={isPending}>
+              <Button variant="neon" size="sm" className="gap-1.5" onClick={handleFriendAction} loading={isPending}>
                 <UserCheck className="h-4 w-4" /> Aceitar amizade
               </Button>
             )}
@@ -161,7 +161,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
       {/* Tabs */}
       <div className="flex rounded-xl bg-secondary p-1 gap-1">
         <button
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "earned" ? "bg-background shadow-sm text-amber-500" : "text-muted-foreground"}`}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "earned" ? "bg-background shadow-sm text-neon" : "text-muted-foreground"}`}
           onClick={() => setTab("earned")}
         >
           <Trophy className="h-4 w-4" /> Troféus ({earned.length})
@@ -187,7 +187,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
             const progress = (validates / VALIDATION_THRESHOLD) * 100;
 
             return (
-              <Card key={ua.id} className={ua.status === "EARNED" ? "border-amber-200 bg-amber-50" : ""}>
+              <Card key={ua.id} className={ua.status === "EARNED" ? "border-neon/30 bg-secondary" : ""}>
                 <CardContent className="p-3 flex items-center gap-3">
                   <div
                     className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
@@ -209,7 +209,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
                       </div>
                     )}
                     {ua.earnedAt && (
-                      <p className="text-[10px] text-amber-600 font-medium mt-0.5">
+                      <p className="text-[10px] text-neon-500 font-medium mt-0.5">
                         Conquistado em {formatDate(ua.earnedAt)}
                       </p>
                     )}

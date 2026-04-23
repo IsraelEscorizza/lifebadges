@@ -117,7 +117,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
             Adquira este pack na loja para desbloquear as conquistas.
           </p>
           <Link href="/marketplace">
-            <Button variant="gold" className="gap-2">
+            <Button variant="neon" className="gap-2">
               <ShoppingBag className="h-4 w-4" />
               Ver na loja · R$ {selectedPack.price.toFixed(2).replace(".", ",")}
             </Button>
@@ -143,7 +143,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-xl border transition-all",
                   isEarned
-                    ? "border-amber-200 bg-amber-50"
+                    ? "border-neon/30 bg-secondary"
                     : isPending
                     ? "border-blue-200 bg-blue-50"
                     : "border-border bg-card hover:bg-accent cursor-pointer"
@@ -155,7 +155,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
                 <div
                   className={cn(
                     "h-12 w-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 relative",
-                    isEarned ? "animate-trophy-glow" : ""
+                    isEarned ? "animate-neon-pulse" : ""
                   )}
                   style={{
                     backgroundColor: isEarned
@@ -191,7 +191,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
                 </div>
 
                 <div className="flex-shrink-0">
-                  {isEarned && <CheckCircle className="h-5 w-5 text-amber-500" />}
+                  {isEarned && <CheckCircle className="h-5 w-5 text-neon" />}
                   {isPending && <Clock className="h-5 w-5 text-blue-500" />}
                   {!claimed && (
                     <div className="text-xs text-muted-foreground border border-dashed border-border rounded-lg px-2 py-1">

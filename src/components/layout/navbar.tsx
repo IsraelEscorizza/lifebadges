@@ -24,7 +24,7 @@ export function Navbar({ user }: NavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border h-14">
       <div className="max-w-2xl mx-auto h-full px-4 flex items-center justify-between">
-        <Link href="/feed" className="flex items-center gap-2 font-black text-lg text-amber-500">
+        <Link href="/feed" className="flex items-center gap-2 font-black text-lg text-neon">
           <span className="text-2xl">🏆</span>
           <span className="hidden sm:block">LifeBadges</span>
         </Link>
@@ -41,7 +41,7 @@ export function Navbar({ user }: NavbarProps) {
               <button className="rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring">
                 <Avatar className="h-8 w-8 cursor-pointer">
                   <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
-                  <AvatarFallback className="text-xs bg-amber-100 text-amber-700">{initials}</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-secondary text-neon-500">{initials}</AvatarFallback>
                 </Avatar>
               </button>
             </DropdownMenu.Trigger>

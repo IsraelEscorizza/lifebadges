@@ -8,7 +8,7 @@ export default async function HomePage() {
   if (session?.user) redirect("/feed");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-500 via-amber-400 to-yellow-300 flex flex-col items-center justify-center p-6 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-neon/80 via-neon to-neon-300 flex flex-col items-center justify-center p-6 text-white">
       <div className="max-w-md text-center space-y-6">
         <div className="text-8xl animate-bounce">🏆</div>
         <h1 className="text-5xl font-black tracking-tight">LifeBadges</h1>
@@ -21,7 +21,7 @@ export default async function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/register">
-            <Button size="lg" className="bg-white text-amber-600 hover:bg-amber-50 font-black w-full sm:w-auto">
+            <Button size="lg" className="bg-white text-neon-500 hover:bg-secondary font-black w-full sm:w-auto">
               Começar grátis 🚀
             </Button>
           </Link>

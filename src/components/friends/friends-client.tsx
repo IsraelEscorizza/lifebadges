@@ -86,7 +86,7 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
                 <Link href={`/profile/${req.sender.id}`}>
                   <Avatar>
                     <AvatarImage src={req.sender.image ?? ""} />
-                    <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                    <AvatarFallback className="bg-secondary text-neon-500 text-xs">
                       {req.sender.name?.[0]}
                     </AvatarFallback>
                   </Avatar>
@@ -100,7 +100,7 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
                 <div className="flex gap-1.5">
                   <Button
                     size="sm"
-                    variant="gold"
+                    variant="neon"
                     onClick={() => respondToRequest(req.id, "ACCEPT")}
                     loading={respondingId === req.id && isPending}
                   >
@@ -142,7 +142,7 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
                 <Link href={`/profile/${friend.id}`}>
                   <Avatar>
                     <AvatarImage src={friend.image ?? ""} />
-                    <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                    <AvatarFallback className="bg-secondary text-neon-500 text-xs">
                       {friend.name?.[0]}
                     </AvatarFallback>
                   </Avatar>

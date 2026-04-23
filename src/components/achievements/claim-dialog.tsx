@@ -87,7 +87,7 @@ export function ClaimAchievementDialog({ achievement, onClose }: ClaimAchievemen
           <p className="text-right text-xs text-muted-foreground">{note.length}/500</p>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+        <div className="bg-secondary border border-neon/30 rounded-lg p-3 text-sm text-neon-600">
           <strong>Como funciona:</strong> Você precisa de <strong>5 validações</strong> de amigos para receber o troféu.
           Qualquer um do seu círculo pode contestar se achar que não é verdade.
         </div>
@@ -96,7 +96,7 @@ export function ClaimAchievementDialog({ achievement, onClose }: ClaimAchievemen
           <Button variant="outline" className="flex-1" onClick={onClose} disabled={isPending}>
             Cancelar
           </Button>
-          <Button variant="gold" className="flex-1" onClick={handleClaim} loading={isPending}>
+          <Button variant="neon" className="flex-1" onClick={handleClaim} loading={isPending}>
             Registrar 🏆
           </Button>
         </div>

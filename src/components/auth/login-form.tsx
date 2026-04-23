@@ -152,7 +152,7 @@ export function LoginForm() {
               Esqueceu a senha?
             </Link>
           </div>
-          <Button type="submit" className="w-full" variant="gold" loading={loading} disabled={!!loadingSocial}>
+          <Button type="submit" className="w-full" variant="neon" loading={loading} disabled={!!loadingSocial}>
             Entrar
           </Button>
         </form>

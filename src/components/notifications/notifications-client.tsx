@@ -18,7 +18,7 @@ const typeIconMap: Record<string, React.ReactNode> = {
   FRIEND_ACCEPTED: <UserPlus className="h-5 w-5 text-green-500" />,
   ACHIEVEMENT_VALIDATED: <ThumbsUp className="h-5 w-5 text-green-500" />,
   ACHIEVEMENT_CONTESTED: <AlertTriangle className="h-5 w-5 text-orange-500" />,
-  ACHIEVEMENT_EARNED: <Trophy className="h-5 w-5 text-amber-500" />,
+  ACHIEVEMENT_EARNED: <Trophy className="h-5 w-5 text-neon" />,
   ACHIEVEMENT_REJECTED: <AlertTriangle className="h-5 w-5 text-red-500" />,
   PACK_PURCHASE_SUCCESS: <ShoppingBag className="h-5 w-5 text-purple-500" />,
 };
@@ -43,7 +43,7 @@ export function NotificationsClient({ notifications }: { notifications: Notifica
             key={notif.id}
             className={cn(
               "flex items-start gap-3 p-3 rounded-xl transition-colors",
-              !notif.isRead ? "bg-amber-50 border border-amber-100" : "bg-card border border-transparent hover:bg-accent"
+              !notif.isRead ? "bg-secondary border border-neon/20" : "bg-card border border-transparent hover:bg-accent"
             )}
           >
             <div className="mt-0.5 flex-shrink-0 h-9 w-9 rounded-xl bg-secondary flex items-center justify-center">
@@ -55,7 +55,7 @@ export function NotificationsClient({ notifications }: { notifications: Notifica
               <p className="text-[10px] text-muted-foreground mt-1">{formatRelativeDate(notif.createdAt)}</p>
             </div>
             {!notif.isRead && (
-              <div className="h-2 w-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+              <div className="h-2 w-2 rounded-full bg-neon mt-1.5 flex-shrink-0" />
             )}
           </div>
         ))}

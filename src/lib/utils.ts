@@ -51,7 +51,7 @@ export const rarityConfig = {
   UNCOMMON: { label: "Incomum", color: "#22c55e", bg: "bg-green-100 text-green-700" },
   RARE: { label: "Raro", color: "#3b82f6", bg: "bg-blue-100 text-blue-700" },
   EPIC: { label: "Épico", color: "#a855f7", bg: "bg-purple-100 text-purple-700" },
-  LEGENDARY: { label: "Lendário", color: "#f59e0b", bg: "bg-amber-100 text-amber-700" },
+  LEGENDARY: { label: "Lendário", color: "#f59e0b", bg: "bg-secondary text-neon-500" },
 } as const;
 
 export const categoryConfig = {

@@ -8,21 +8,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+        default:     "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm neon-glow",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-border bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-gold-500 text-white hover:bg-gold-600 shadow-sm",
-        social: "border border-border bg-white hover:bg-gray-50 text-gray-700 shadow-sm",
+        outline:     "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
+        secondary:   "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost:       "hover:bg-accent hover:text-accent-foreground",
+        link:        "text-primary underline-offset-4 hover:underline",
+        neon:        "bg-neon text-black font-bold hover:bg-neon-300 neon-glow shadow-sm",
+        social:      "border border-border bg-secondary hover:bg-accent text-foreground shadow-sm",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 px-3 text-xs",
-        lg: "h-12 px-8 text-base",
-        icon: "h-10 w-10",
-        "icon-sm": "h-8 w-8",
+        default:  "h-10 px-4 py-2",
+        sm:       "h-8 px-3 text-xs",
+        lg:       "h-12 px-8 text-base",
+        icon:     "h-10 w-10",
+        "icon-sm":"h-8 w-8",
       },
     },
     defaultVariants: { variant: "default", size: "default" },
@@ -46,9 +46,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading ? (
+        {loading && (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        ) : null}
+        )}
         {children}
       </Comp>
     );

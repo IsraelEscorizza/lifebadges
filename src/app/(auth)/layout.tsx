@@ -4,7 +4,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen flex">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-amber-500 via-amber-400 to-yellow-300 flex-col items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-neon/80 via-neon to-neon-300 flex-col items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="relative z-10 text-center text-white">
           <div className="text-8xl mb-6 animate-bounce">🏆</div>
@@ -30,7 +30,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="w-full max-w-md">
           <div className="lg:hidden text-center mb-8">
             <span className="text-5xl">🏆</span>
-            <h1 className="text-3xl font-black text-amber-500 mt-2">LifeBadges</h1>
+            <h1 className="text-3xl font-black text-neon mt-2">LifeBadges</h1>
           </div>
           {children}
         </div>

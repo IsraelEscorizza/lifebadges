@@ -154,7 +154,7 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
 
               {!isPurchased && (
                 <Button
-                  variant="gold"
+                  variant="neon"
                   className="w-full gap-2"
                   onClick={() => handlePurchase(pack.id)}
                   loading={loadingPackId === pack.id && isPending}

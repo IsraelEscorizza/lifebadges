@@ -75,7 +75,7 @@ export default function OnboardingPage() {
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-amber-500" : "bg-amber-100"}`}
+              className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-neon" : "bg-secondary"}`}
             />
           ))}
         </div>
@@ -113,11 +113,11 @@ export default function OnboardingPage() {
           )}
 
           {step < 2 ? (
-            <Button variant="gold" className="w-full gap-2" onClick={() => setStep((s) => s + 1)}>
+            <Button variant="neon" className="w-full gap-2" onClick={() => setStep((s) => s + 1)}>
               Próximo <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="gold" className="w-full gap-2" onClick={handleFinish} loading={isPending}>
+            <Button variant="neon" className="w-full gap-2" onClick={handleFinish} loading={isPending}>
               <Trophy className="h-4 w-4" /> Começar a colecionar!
             </Button>
           )}

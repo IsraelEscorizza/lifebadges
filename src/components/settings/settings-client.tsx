@@ -117,7 +117,7 @@ export function SettingsClient({ user }: Props) {
               role="switch"
               aria-checked={form.isPrivate}
               onClick={() => set("isPrivate", !form.isPrivate)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${form.isPrivate ? "bg-amber-500" : "bg-secondary border border-border"}`}
+              className={`relative h-6 w-11 rounded-full transition-colors ${form.isPrivate ? "bg-neon" : "bg-secondary border border-border"}`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.isPrivate ? "translate-x-5" : ""}`}
@@ -142,7 +142,7 @@ export function SettingsClient({ user }: Props) {
         </CardContent>
       </Card>
 
-      <Button variant="gold" className="w-full gap-2" onClick={handleSave} loading={isPending}>
+      <Button variant="neon" className="w-full gap-2" onClick={handleSave} loading={isPending}>
         <Save className="h-4 w-4" /> Salvar alterações
       </Button>
     </div>

@@ -78,7 +78,7 @@ export function ForgotPasswordForm() {
             leftIcon={<Mail className="h-4 w-4" />}
             autoFocus
           />
-          <Button type="submit" className="w-full" variant="gold" loading={loading}>
+          <Button type="submit" className="w-full" variant="neon" loading={loading}>
             Enviar link de recuperação
           </Button>
         </form>
