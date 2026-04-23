@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { UserPlus, UserCheck, Search, Users } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +73,7 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
 
   return (
     <div className="pt-4 space-y-5">
+      <BackButton href="/feed" />
       <h1 className="text-xl font-black">Amigos</h1>
 
       {/* Pending requests */}

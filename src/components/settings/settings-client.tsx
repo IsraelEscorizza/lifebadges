@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { Save, User, Lock, Shield } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +64,7 @@ export function SettingsClient({ user }: Props) {
 
   return (
     <div className="pt-4 space-y-5">
+      <BackButton href="/feed" />
       <h1 className="text-xl font-black">Configurações</h1>
 
       <Card>

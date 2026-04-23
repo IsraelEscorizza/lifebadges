@@ -70,6 +70,10 @@ export function LoginForm() {
   }
 
   return (
+    <div className="space-y-3">
+      <Link href="/" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-white transition-colors group">
+        <span className="group-hover:-translate-x-0.5 transition-transform inline-block">←</span> Início
+      </Link>
     <Card className="shadow-lg">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-black">Bem-vindo de volta!</CardTitle>
@@ -165,5 +169,6 @@ export function LoginForm() {
         </p>
       </CardContent>
     </Card>
+    </div>
   );
 }

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { rarityConfig, formatDate, VALIDATION_THRESHOLD } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { BackButton } from "@/components/ui/back-button";
 
 interface ProfileUser {
   id: string;
@@ -93,6 +94,7 @@ export function ProfileClient({ user, friendship, earned, pending, isOwner, curr
 
   return (
     <div className="pt-4 space-y-5">
+      <BackButton />
       {/* Profile header */}
       <div className="text-center space-y-3">
         <Avatar className="h-20 w-20 mx-auto ring-4 ring-neon/30">

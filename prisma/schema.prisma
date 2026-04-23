@@ -65,12 +65,14 @@ model User {
   image          String?
   bio            String?   @db.VarChar(280)
   birthDate      DateTime?
-  isPrivate      Boolean   @default(false)
-  isVerified     Boolean   @default(false)
-  isBanned       Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  isPrivate         Boolean   @default(false)
+  isVerified        Boolean   @default(false)
+  isBanned          Boolean   @default(false)
+  firstLoginAt      DateTime?
+  freePackClaimedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
   accounts       Account[]
   sessions       Session[]

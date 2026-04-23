@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Trophy, UserPlus, ThumbsUp, AlertTriangle, ShoppingBag } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { formatRelativeDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ export function NotificationsClient({ notifications }: { notifications: Notifica
 
   return (
     <div className="pt-4 space-y-3">
+      <BackButton href="/feed" />
       <h1 className="text-xl font-black">Notificações</h1>
       <div className="space-y-1">
         {notifications.map((notif) => (

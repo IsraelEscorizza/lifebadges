@@ -74,6 +74,10 @@ export function RegisterForm() {
   }
 
   return (
+    <div className="space-y-3">
+      <Link href="/login" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-white transition-colors group">
+        <span className="group-hover:-translate-x-0.5 transition-transform inline-block">←</span> Fazer login
+      </Link>
     <Card className="shadow-lg">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-black">Crie sua conta</CardTitle>
@@ -185,5 +189,6 @@ export function RegisterForm() {
         </p>
       </CardContent>
     </Card>
+    </div>
   );
 }

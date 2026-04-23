@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ClaimAchievementDialog } from "@/components/achievements/claim-dialog";
 import { rarityConfig, categoryConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { BackButton } from "@/components/ui/back-button";
 
 interface Pack {
   id: string;
@@ -55,6 +56,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
 
   return (
     <div className="pt-4 space-y-4">
+      <BackButton href="/feed" />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black">Conquistas</h1>
         <Link href="/marketplace">

@@ -39,6 +39,7 @@ async function main() {
   });
 
   await upsertAchievements(pack1.id, [
+    { slug: "bem-vindo",                      name: "Bem-vindo ao LifeBadges!",       description: "Fez o primeiro login e começou a jornada de conquistas.",            icon: "🎉", category: AchievementCategory.PERSONAL,      rarity: AchievementRarity.COMMON,    sortOrder: 0  },
     { slug: "primeiro-dia-escola",         name: "Primeiro Dia de Escola",        description: "Deu o primeiro passo na educação formal.",                        icon: "🎒", category: AchievementCategory.EDUCATION,     rarity: AchievementRarity.COMMON,    sortOrder: 1  },
     { slug: "formatura-ensino-fundamental", name: "Formatura — Ensino Fundamental", description: "Concluiu o ensino fundamental com sucesso.",                     icon: "📗", category: AchievementCategory.EDUCATION,     rarity: AchievementRarity.COMMON,    sortOrder: 2  },
     { slug: "formatura-ensino-medio",       name: "Formatura — Ensino Médio",       description: "Recebeu o diploma do ensino médio!",                             icon: "🎓", category: AchievementCategory.EDUCATION,     rarity: AchievementRarity.UNCOMMON,  sortOrder: 3  },

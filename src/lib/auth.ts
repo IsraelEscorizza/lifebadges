@@ -111,15 +111,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   events: {
     async createUser({ user }) {
-      // Grant access to base achievement pack on sign up
       if (!user.id) return;
-      const basePack = await db.achievementPack.findFirst({
-        where: { isBase: true },
-        include: { achievements: { select: { id: true } } },
+      // No purchase record needed for base pack — visible via isBase flag
+    },
+
+    async signIn({ user }) {
+      if (!user.id) return;
+      const dbUser = await db.user.findUnique({
+        where: { id: user.id },
+        select: { firstLoginAt: true },
       });
-      if (!basePack) return;
-      // No purchase record needed for base pack — it's free
-      // Achievements are visible by default via the isBase flag
+      if (!dbUser || dbUser.firstLoginAt) return;
+
+      // Mark first login and auto-grant welcome achievement
+      await db.user.update({
+        where: { id: user.id },
+        data: { firstLoginAt: new Date() },
+      });
+
+      const welcomeAch = await db.achievement.findFirst({
+        where: { slug: "bem-vindo" },
+        select: { id: true },
+      });
+      if (!welcomeAch) return;
+
+      await db.userAchievement.upsert({
+        where: { userId_achievementId: { userId: user.id, achievementId: welcomeAch.id } },
+        update: {},
+        create: {
+          userId: user.id,
+          achievementId: welcomeAch.id,
+          status: "EARNED",
+          earnedAt: new Date(),
+        },
+      });
     },
   },
 

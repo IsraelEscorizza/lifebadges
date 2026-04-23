@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { formatRelativeDate, rarityConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ValidationButtons } from "@/components/achievements/validation-buttons";
-import { Trophy, Users } from "lucide-react";
+import { Trophy, Users, UserPlus, Sparkles } from "lucide-react";
 
 interface FeedItem {
   id: string;
@@ -30,38 +33,200 @@ interface FeedItem {
   }>;
 }
 
+interface FriendSuggestion {
+  id: string;
+  name: string | null;
+  username: string | null;
+  image: string | null;
+  _count: { userAchievements: number };
+}
+
+interface AchievementSuggestion {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  rarity: string;
+  packName: string;
+  packIcon: string;
+}
+
 interface FeedClientProps {
   items: FeedItem[];
   currentUserId: string;
+  friendSuggestions: FriendSuggestion[];
+  achievementSuggestions: AchievementSuggestion[];
+  friendIds: string[];
 }
 
-export function FeedClient({ items, currentUserId }: FeedClientProps) {
-  if (items.length === 0) {
-    return (
-      <div className="mt-12 text-center space-y-3">
-        <div className="text-6xl">🏆</div>
-        <h2 className="text-xl font-bold">Seu feed está vazio</h2>
-        <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-          Adicione amigos ou registre sua primeira conquista para começar!
-        </p>
-        <div className="flex gap-2 justify-center mt-4">
-          <Link href="/achievements" className="px-4 py-2 bg-neon text-white rounded-lg text-sm font-semibold hover:bg-neon-500 transition-colors">
-            Ver conquistas
-          </Link>
-          <Link href="/friends" className="px-4 py-2 border border-border rounded-lg text-sm font-semibold hover:bg-accent transition-colors">
-            Adicionar amigos
-          </Link>
-        </div>
+export function FeedClient({
+  items,
+  currentUserId,
+  friendSuggestions,
+  achievementSuggestions,
+  friendIds,
+}: FeedClientProps) {
+  const hasFriends = friendIds.length > 0;
+
+  return (
+    <div className="space-y-4 pt-4 pb-6">
+      <h1 className="text-xl font-black">Feed</h1>
+
+      {/* Achievement suggestions */}
+      {achievementSuggestions.length > 0 && (
+        <SuggestionSection title="Conquistas para você alcançar" icon={<Sparkles className="h-4 w-4 text-neon" />}>
+          <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+            {achievementSuggestions.map((a) => (
+              <AchievementSuggestionCard key={a.id} achievement={a} />
+            ))}
+          </div>
+        </SuggestionSection>
+      )}
+
+      {/* Friend suggestions */}
+      {friendSuggestions.length > 0 && (
+        <SuggestionSection title="Sugestões de amigos" icon={<UserPlus className="h-4 w-4 text-neon" />}>
+          <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+            {friendSuggestions.map((u) => (
+              <FriendSuggestionCard key={u.id} user={u} />
+            ))}
+          </div>
+        </SuggestionSection>
+      )}
+
+      {/* Feed */}
+      {items.length === 0 ? (
+        <EmptyFeed hasFriends={hasFriends} />
+      ) : (
+        <>
+          {hasFriends && (
+            <p className="text-xs text-muted-foreground px-1">
+              Conquistas recentes dos seus amigos e suas
+            </p>
+          )}
+          {items.map((item) => (
+            <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
+function SuggestionSection({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        {icon}
+        <h2 className="text-sm font-bold text-white/80">{title}</h2>
       </div>
-    );
+      {children}
+    </div>
+  );
+}
+
+function AchievementSuggestionCard({ achievement }: { achievement: AchievementSuggestion }) {
+  const rarity = rarityConfig[achievement.rarity as keyof typeof rarityConfig];
+  return (
+    <Link
+      href="/achievements"
+      className="snap-start flex-shrink-0 w-44 bg-secondary border border-border hover:border-neon/40 rounded-xl p-3 space-y-2 transition-colors"
+    >
+      <div className="text-3xl">{achievement.icon}</div>
+      <div>
+        <p className="font-semibold text-xs text-white leading-tight">{achievement.name}</p>
+        <p className="text-xs text-white/50 truncate mt-0.5">{achievement.packIcon} {achievement.packName}</p>
+      </div>
+      <Badge variant={achievement.rarity.toLowerCase() as "common" | "uncommon" | "rare" | "epic" | "legendary"} className="text-[10px]">
+        {rarity.label}
+      </Badge>
+    </Link>
+  );
+}
+
+function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const initials = user.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "?";
+
+  async function addFriend() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/friends", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receiverId: user.id }),
+      });
+      if (!res.ok) throw new Error();
+      setSent(true);
+      toast.success("Pedido enviado!");
+    } catch {
+      toast.error("Erro ao enviar pedido.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="space-y-4 pt-4">
-      <h1 className="text-xl font-black">Feed</h1>
-      {items.map((item) => (
-        <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
-      ))}
+    <div className="snap-start flex-shrink-0 w-36 bg-secondary border border-border rounded-xl p-3 flex flex-col items-center gap-2 text-center">
+      <Link href={`/profile/${user.id}`}>
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
+          <AvatarFallback className="bg-neon/10 text-neon text-xs">{initials}</AvatarFallback>
+        </Avatar>
+      </Link>
+      <div>
+        <p className="font-semibold text-xs text-white truncate max-w-[112px]">{user.name ?? user.username}</p>
+        <p className="text-[10px] text-white/50">{user._count.userAchievements} conquistas</p>
+      </div>
+      {sent ? (
+        <span className="text-xs text-neon font-semibold">Pedido enviado ✓</span>
+      ) : (
+        <Button
+          size="sm"
+          className="w-full h-7 text-xs bg-neon text-black font-bold hover:bg-neon-300"
+          disabled={loading}
+          onClick={addFriend}
+        >
+          {loading ? "..." : "Adicionar"}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function EmptyFeed({ hasFriends }: { hasFriends: boolean }) {
+  return (
+    <div className="mt-8 text-center space-y-3">
+      <div className="text-6xl">🏆</div>
+      <h2 className="text-xl font-bold">Seu feed está vazio</h2>
+      <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+        {hasFriends
+          ? "Registre sua primeira conquista para ela aparecer aqui!"
+          : "Adicione amigos ou registre sua primeira conquista para começar!"}
+      </p>
+      <div className="flex gap-2 justify-center mt-4">
+        <Link href="/achievements">
+          <Button size="sm" className="bg-neon text-black font-semibold hover:bg-neon-300">
+            Ver conquistas
+          </Button>
+        </Link>
+        {!hasFriends && (
+          <Link href="/friends">
+            <Button size="sm" variant="outline">
+              Adicionar amigos
+            </Button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

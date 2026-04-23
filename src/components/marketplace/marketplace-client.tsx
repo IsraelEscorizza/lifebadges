@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { ShoppingBag, CheckCircle, Lock, ChevronDown, ChevronUp } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
 
   return (
     <div className="pt-4 space-y-4">
+      <BackButton href="/feed" />
       <div>
         <h1 className="text-xl font-black">Loja de Packs</h1>
         <p className="text-sm text-muted-foreground">Desbloqueie novos conjuntos de conquistas</p>
