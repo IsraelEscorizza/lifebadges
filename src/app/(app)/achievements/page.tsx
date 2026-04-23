@@ -1,22 +1,31 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { AchievementsClient } from "@/components/achievements/achievements-client";
 
 export const metadata: Metadata = { title: "Conquistas" };
 
-async function getData(userId: string) {
-  const [packs, userAchievements, purchases] = await Promise.all([
+// Pack + achievement templates rarely change — cache 1 hour
+const getAllPacks = unstable_cache(
+  async () =>
     db.achievementPack.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: "asc" },
       include: {
-        achievements: {
-          where: { isActive: true },
-          orderBy: { sortOrder: "asc" },
-        },
+        achievements: { where: { isActive: true }, orderBy: { sortOrder: "asc" } },
       },
     }),
+  ["all-packs"],
+  { revalidate: 3600 }
+);
+
+export default async function AchievementsPage() {
+  const session = await auth();
+  const userId = session!.user!.id as string;
+
+  const [packs, userAchievements, purchases] = await Promise.all([
+    getAllPacks(),
     db.userAchievement.findMany({
       where: { userId },
       select: {
@@ -46,14 +55,6 @@ async function getData(userId: string) {
       },
     ])
   );
-
-  return { packs, unlockedPackIds, claimedMap };
-}
-
-export default async function AchievementsPage() {
-  const session = await auth();
-  const userId = session!.user!.id as string;
-  const { packs, unlockedPackIds, claimedMap } = await getData(userId);
 
   return (
     <AchievementsClient

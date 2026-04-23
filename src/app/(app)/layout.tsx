@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { Navbar } from "@/components/layout/navbar";
+import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -9,10 +9,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar user={session.user} />
-      <main className="max-w-2xl mx-auto px-4 pt-16 pb-20 md:pb-8">
+      {/* Desktop sidebar */}
+      <Sidebar user={session.user} />
+
+      {/* Content shifts right on desktop to clear the sidebar */}
+      <main className="lg:ml-60 max-w-2xl mx-auto px-4 pt-6 pb-24 lg:pb-10">
         {children}
       </main>
+
+      {/* Mobile bottom nav */}
       <BottomNav />
     </div>
   );

@@ -94,20 +94,16 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
           >
             {/* Pack banner */}
             <div
-              className="h-24 flex items-center justify-between px-5"
+              className="h-20 flex items-center justify-between px-5"
               style={{ backgroundColor: pack.color }}
             >
               <div className="text-white">
                 <h2 className="text-xl font-black">{pack.icon} {pack.name}</h2>
                 <p className="text-sm opacity-80">{pack.achievements.length} conquistas</p>
               </div>
-              {isPurchased ? (
+              {isPurchased && (
                 <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5 text-white text-sm font-semibold">
                   <CheckCircle className="h-4 w-4" /> Desbloqueado
-                </div>
-              ) : (
-                <div className="bg-white rounded-xl px-4 py-2 text-sm font-black" style={{ color: pack.color }}>
-                  R$ {pack.price.toFixed(2).replace(".", ",")}
                 </div>
               )}
             </div>
