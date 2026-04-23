@@ -1,0 +1,28 @@
+.env.local
+.env.*.local
+.env
+
+# Next.js
+.next/
+out/
+build/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Prisma
+prisma/migrations/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,326 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// AUTH (NextAuth adapter models)
+// ─────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  username       String?   @unique
+  email          String    @unique
+  emailVerified  DateTime?
+  // Password stored as bcrypt hash — never plain text
+  passwordHash   String?
+  image          String?
+  bio            String?   @db.VarChar(280)
+  birthDate      DateTime?
+  isPrivate      Boolean   @default(false)
+  isVerified     Boolean   @default(false)
+  isBanned       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  accounts       Account[]
+  sessions       Session[]
+
+  // Achievements
+  userAchievements UserAchievement[]
+
+  // Social
+  sentFriendRequests     Friendship[] @relation("FriendshipSender")
+  receivedFriendRequests Friendship[] @relation("FriendshipReceiver")
+
+  // Validations given and received
+  validationsGiven    Validation[] @relation("ValidatorUser")
+
+  // Notifications
+  notifications Notification[]
+
+  // Marketplace
+  purchases Purchase[]
+
+  // Password reset tokens (hashed)
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────
+// FRIENDSHIPS / CIRCLES
+// ─────────────────────────────────────────
+
+model Friendship {
+  id         String           @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     FriendshipStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  sender   User @relation("FriendshipSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId])
+  @@index([senderId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+// ─────────────────────────────────────────
+// ACHIEVEMENT PACKS
+// ─────────────────────────────────────────
+
+model AchievementPack {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  icon        String
+  color       String   @default("#f59e0b")
+  isBase      Boolean  @default(false)  // Base pack — free for all users
+  price       Float    @default(0)
+  stripeProductId String?
+  stripePriceId   String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  achievements Achievement[]
+  purchases    Purchase[]
+}
+
+// ─────────────────────────────────────────
+// ACHIEVEMENTS (TEMPLATES)
+// ─────────────────────────────────────────
+
+model Achievement {
+  id          String          @id @default(cuid())
+  packId      String
+  name        String
+  slug        String
+  description String
+  icon        String
+  rarity      AchievementRarity @default(COMMON)
+  category    AchievementCategory
+  sortOrder   Int             @default(0)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  pack             AchievementPack   @relation(fields: [packId], references: [id], onDelete: Cascade)
+  userAchievements UserAchievement[]
+
+  @@unique([packId, slug])
+  @@index([packId])
+}
+
+enum AchievementRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum AchievementCategory {
+  EDUCATION
+  CAREER
+  PERSONAL
+  TRAVEL
+  HEALTH
+  RELATIONSHIPS
+  FINANCE
+  SPORTS
+  ARTS
+  TECHNOLOGY
+  OTHER
+}
+
+// ─────────────────────────────────────────
+// USER ACHIEVEMENTS (CLAIMS)
+// ─────────────────────────────────────────
+
+model UserAchievement {
+  id            String                @id @default(cuid())
+  userId        String
+  achievementId String
+  status        UserAchievementStatus @default(PENDING)
+  note          String?               @db.VarChar(500)
+  proofImageUrl String?
+  earnedAt      DateTime?             // Set when status becomes EARNED
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  validations Validation[]
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([status])
+}
+
+enum UserAchievementStatus {
+  PENDING      // Claimed, waiting for validations
+  EARNED       // >= 5 validations — trophy awarded
+  CONTESTED    // More contests than validations (not conclusive yet)
+  REJECTED     // Contested and removed
+}
+
+// ─────────────────────────────────────────
+// VALIDATIONS
+// ─────────────────────────────────────────
+
+model Validation {
+  id                String         @id @default(cuid())
+  userAchievementId String
+  validatorId       String
+  type              ValidationType
+  comment           String?        @db.VarChar(300)
+  createdAt         DateTime       @default(now())
+
+  userAchievement UserAchievement @relation(fields: [userAchievementId], references: [id], onDelete: Cascade)
+  validator       User            @relation("ValidatorUser", fields: [validatorId], references: [id], onDelete: Cascade)
+
+  // Each user can only validate once per achievement claim
+  @@unique([userAchievementId, validatorId])
+  @@index([userAchievementId])
+  @@index([validatorId])
+}
+
+enum ValidationType {
+  VALIDATE
+  CONTEST
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?            // Extra payload (achievementId, senderId, etc.)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  FRIEND_ACCEPTED
+  ACHIEVEMENT_VALIDATED
+  ACHIEVEMENT_CONTESTED
+  ACHIEVEMENT_EARNED      // 5th validation received — trophy!
+  ACHIEVEMENT_REJECTED
+  PACK_PURCHASE_SUCCESS
+}
+
+// ─────────────────────────────────────────
+// MARKETPLACE / PURCHASES
+// ─────────────────────────────────────────
+
+model Purchase {
+  id               String        @id @default(cuid())
+  userId           String
+  packId           String
+  amount           Float
+  currency         String        @default("BRL")
+  status           PurchaseStatus @default(PENDING)
+  stripeSessionId  String?       @unique
+  stripePaymentIntentId String?
+  receiptUrl       String?
+  createdAt        DateTime      @default(now())
+  completedAt      DateTime?
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack AchievementPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeSessionId])
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --name lifebadges)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const s = require\\('./node_modules/stripe/package.json'\\); console.log\\(s.version\\)\")",
+      "Bash(node -e \"const s = require\\('./node_modules/stripe/types/index.d.ts'\\); console.log\\(s\\)\")",
+      "Bash(gh --version)",
+      "Bash(npx vercel *)",
+      "Bash(git --version)",
+      "Bash(git config *)"
+    ]
+  }
+}
