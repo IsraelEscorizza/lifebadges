@@ -93,6 +93,12 @@ model User {
   // Marketplace
   purchases Purchase[]
 
+  // Groups
+  ownedGroups          Group[]       @relation("GroupOwner")
+  groupMemberships     GroupMember[]
+  groupInvitesSent     GroupInvite[] @relation("GroupInviter")
+  groupInvitesReceived GroupInvite[] @relation("GroupInvited")
+
   // Password reset tokens (hashed)
   passwordResetTokens PasswordResetToken[]
 
@@ -325,4 +331,70 @@ enum PurchaseStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+// ─────────────────────────────────────────
+// GROUPS
+// ─────────────────────────────────────────
+
+model Group {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?  @db.VarChar(200)
+  icon            String   @default("🏆")
+  ownerId         String
+  maxMembers      Int      @default(10)
+  isActive        Boolean  @default(false)
+  stripeSessionId String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  owner   User          @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members GroupMember[]
+  invites GroupInvite[]
+
+  @@index([ownerId])
+}
+
+model GroupMember {
+  id       String          @id @default(cuid())
+  groupId  String
+  userId   String
+  role     GroupMemberRole @default(MEMBER)
+  joinedAt DateTime        @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+}
+
+enum GroupMemberRole {
+  OWNER
+  MEMBER
+}
+
+model GroupInvite {
+  id        String            @id @default(cuid())
+  groupId   String
+  invitedId String
+  inviterId String
+  status    GroupInviteStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invited User  @relation("GroupInvited", fields: [invitedId], references: [id], onDelete: Cascade)
+  inviter User  @relation("GroupInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, invitedId])
+  @@index([groupId])
+  @@index([invitedId])
+}
+
+enum GroupInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }

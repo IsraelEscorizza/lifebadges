@@ -5,18 +5,19 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Trophy, Users, ShoppingBag,
-  Bell, Settings, User as UserIcon, LogOut,
+  Bell, Settings, User as UserIcon, LogOut, UsersRound,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { Session } from "next-auth";
 
 const navItems = [
-  { href: "/feed",         label: "Feed",       icon: Home },
-  { href: "/achievements", label: "Conquistas", icon: Trophy },
-  { href: "/friends",      label: "Amigos",     icon: Users },
-  { href: "/marketplace",  label: "Loja",       icon: ShoppingBag },
-  { href: "/notifications",label: "Notificações",icon: Bell },
+  { href: "/feed",          label: "Feed",         icon: Home },
+  { href: "/achievements",  label: "Conquistas",   icon: Trophy },
+  { href: "/friends",       label: "Amigos",       icon: Users },
+  { href: "/groups",        label: "Grupos",       icon: UsersRound },
+  { href: "/marketplace",   label: "Loja",         icon: ShoppingBag },
+  { href: "/notifications", label: "Notificações", icon: Bell },
 ];
 
 interface SidebarProps {

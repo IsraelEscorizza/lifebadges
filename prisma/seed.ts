@@ -57,8 +57,11 @@ async function main() {
     { slug: "primeiro-neto",                name: "Avô/Avó",                        description: "Recebeu o título mais especial da vida.",                        icon: "👴", category: AchievementCategory.RELATIONSHIPS, rarity: AchievementRarity.EPIC,      sortOrder: 15 },
     { slug: "aposentadoria",                name: "Aposentadoria",                  description: "Encerrou a carreira profissional com chave de ouro.",             icon: "🌅", category: AchievementCategory.CAREER,        rarity: AchievementRarity.LEGENDARY, sortOrder: 16 },
     { slug: "bodas-ouro",                   name: "Bodas de Ouro",                  description: "50 anos de união. Uma raridade lendária.",                       icon: "💛", category: AchievementCategory.RELATIONSHIPS, rarity: AchievementRarity.LEGENDARY, sortOrder: 17 },
+    { slug: "fundador-de-grupo",            name: "Fundador de Grupo",              description: "Criou seu próprio grupo de conquistas no LifeBadges.",             icon: "👑", category: AchievementCategory.PERSONAL,      rarity: AchievementRarity.RARE,      sortOrder: 18 },
+    { slug: "membro-de-grupo",              name: "Membro de Grupo",                description: "Entrou em um grupo e começou a competir com amigos.",              icon: "🤝", category: AchievementCategory.PERSONAL,      rarity: AchievementRarity.COMMON,    sortOrder: 19 },
+    { slug: "lider-da-turma",               name: "Líder da Turma",                 description: "Ficou em 1º lugar no ranking de um grupo.",                        icon: "🥇", category: AchievementCategory.PERSONAL,      rarity: AchievementRarity.EPIC,      sortOrder: 20 },
   ]);
-  console.log(`✅ Pack "Marcos da Vida" — 17 conquistas`);
+  console.log(`✅ Pack "Marcos da Vida" — 20 conquistas`);
 
   // ─────────────────────────────────────────────────────────────────────────
   // PACK 2 — SAÚDE & BEM-ESTAR

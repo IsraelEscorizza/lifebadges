@@ -124,18 +124,24 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
                 <div className="grid grid-cols-2 gap-2">
                   {pack.achievements.map((ach) => {
                     const rarity = rarityConfig[ach.rarity as keyof typeof rarityConfig];
+                    // Show name + icon for COMMON and UNCOMMON even when locked
+                    const isVisible = isPurchased || ach.rarity === "COMMON" || ach.rarity === "UNCOMMON";
                     return (
                       <div
                         key={ach.id}
                         className={cn(
                           "flex items-center gap-2 p-2 rounded-lg border",
-                          isPurchased ? "bg-background" : "opacity-70 bg-secondary"
+                          isPurchased
+                            ? "bg-background"
+                            : isVisible
+                            ? "bg-secondary border-white/10"
+                            : "opacity-50 bg-secondary"
                         )}
                       >
-                        <span className="text-xl">{isPurchased ? ach.icon : "🔒"}</span>
+                        <span className="text-xl">{isVisible ? ach.icon : "🔒"}</span>
                         <div className="min-w-0">
                           <p className="text-xs font-medium truncate">
-                            {isPurchased ? ach.name : "???"}
+                            {isVisible ? ach.name : "???"}
                           </p>
                           <Badge
                             variant={ach.rarity.toLowerCase() as "common" | "uncommon" | "rare" | "epic" | "legendary"}
