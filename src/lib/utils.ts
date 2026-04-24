@@ -46,12 +46,13 @@ export function getAchievementStatus(validates: number, contests: number) {
   return "PENDING";
 }
 
+// trophyColor = PSN-style rarity tier colors
 export const rarityConfig = {
-  COMMON: { label: "Comum", color: "#9ca3af", bg: "bg-gray-100 text-gray-600" },
-  UNCOMMON: { label: "Incomum", color: "#22c55e", bg: "bg-green-100 text-green-700" },
-  RARE: { label: "Raro", color: "#3b82f6", bg: "bg-blue-100 text-blue-700" },
-  EPIC: { label: "Épico", color: "#a855f7", bg: "bg-purple-100 text-purple-700" },
-  LEGENDARY: { label: "Lendário", color: "#f59e0b", bg: "bg-secondary text-neon-500" },
+  COMMON:    { label: "Comum",    color: "#9ca3af", bg: "bg-gray-500/15 text-gray-400",    trophyColor: "#CD7F32" }, // Bronze
+  UNCOMMON:  { label: "Incomum",  color: "#22c55e", bg: "bg-green-500/15 text-green-400",  trophyColor: "#A8A9AD" }, // Silver
+  RARE:      { label: "Raro",     color: "#3b82f6", bg: "bg-blue-500/15 text-blue-400",    trophyColor: "#FFD700" }, // Gold
+  EPIC:      { label: "Épico",    color: "#a855f7", bg: "bg-purple-500/15 text-purple-400",trophyColor: "#BDB9C4" }, // Platinum
+  LEGENDARY: { label: "Lendário", color: "#f59e0b", bg: "bg-amber-500/15 text-amber-400",  trophyColor: "#00D4FF" }, // Diamond
 } as const;
 
 export const categoryConfig = {

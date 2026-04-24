@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { formatRelativeDate, rarityConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
+import { formatRelativeDate, formatDate, rarityConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ValidationButtons } from "@/components/achievements/validation-buttons";
-import { Trophy, Users, UserPlus, Sparkles, Star } from "lucide-react";
+import { Trophy, Users, UserPlus, Sparkles, CalendarDays } from "lucide-react";
 
 interface FeedItem {
   id: string;
@@ -126,7 +126,7 @@ function SuggestionSection({
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         {icon}
-        <h2 className="text-sm font-bold text-white/80">{title}</h2>
+        <h2 className="text-sm font-bold text-foreground/80">{title}</h2>
       </div>
       {children}
     </div>
@@ -142,8 +142,8 @@ function AchievementSuggestionCard({ achievement }: { achievement: AchievementSu
     >
       <div className="text-3xl">{achievement.icon}</div>
       <div>
-        <p className="font-semibold text-xs text-white leading-tight">{achievement.name}</p>
-        <p className="text-xs text-white/50 truncate mt-0.5">{achievement.packIcon} {achievement.packName}</p>
+        <p className="font-semibold text-xs text-foreground leading-tight">{achievement.name}</p>
+        <p className="text-xs text-muted-foreground truncate mt-0.5">{achievement.packIcon} {achievement.packName}</p>
       </div>
       <Badge variant={achievement.rarity.toLowerCase() as "common" | "uncommon" | "rare" | "epic" | "legendary"} className="text-[10px]">
         {rarity.label}
@@ -183,8 +183,8 @@ function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
           <AvatarFallback className="bg-neon/10 text-neon text-xs">{initials}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-semibold text-xs text-white truncate max-w-[112px]">{user.name ?? user.username}</p>
-          <p className="text-[10px] text-white/50">{user._count.userAchievements} conquistas</p>
+          <p className="font-semibold text-xs text-foreground truncate max-w-[112px]">{user.name ?? user.username}</p>
+          <p className="text-[10px] text-muted-foreground">{user._count.userAchievements} conquistas</p>
         </div>
       </Link>
       {sent ? (
@@ -256,11 +256,14 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
               {item.user.name ?? item.user.username}
             </Link>
             <p className="text-xs text-muted-foreground">
-              registrou uma conquista · {formatRelativeDate(item.createdAt)}
+              {item.status === "EARNED" ? "conquistou" : "registrou"} uma conquista · {formatRelativeDate(item.createdAt)}
             </p>
           </div>
           {item.status === "EARNED" && (
-            <Trophy className="h-5 w-5 text-neon animate-neon-pulse flex-shrink-0" strokeWidth={1.5} />
+            <Trophy
+              className="h-5 w-5 flex-shrink-0"
+              style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}
+            />
           )}
         </div>
 
@@ -303,9 +306,25 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
         )}
 
         {item.status === "EARNED" && (
-          <div className="flex items-center gap-2 text-sm font-semibold text-neon-500 bg-secondary rounded-lg px-3 py-2">
-            <Trophy className="h-4 w-4" strokeWidth={1.5} />
-            Troféu conquistado! Validado por {validates.length} pessoas.
+          <div className="flex items-center gap-2 text-sm">
+            <Trophy
+              className="h-4 w-4 flex-shrink-0"
+              style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}
+            />
+            <span className="font-semibold" style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}>
+              Troféu conquistado!
+            </span>
+            {validates.length > 0 && (
+              <span className="text-muted-foreground text-xs">
+                {validates.length} {validates.length === 1 ? "pessoa validou" : "pessoas validaram"}
+              </span>
+            )}
+            {item.earnedAt && (
+              <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                <CalendarDays className="h-3 w-3" />
+                {formatDate(item.earnedAt)}
+              </span>
+            )}
           </div>
         )}
 

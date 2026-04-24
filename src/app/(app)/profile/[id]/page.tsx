@@ -11,39 +11,67 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 async function getProfile(id: string, currentUserId: string) {
-  const user = await db.user.findUnique({
-    where: { id, deletedAt: null, isBanned: false },
-    select: {
-      id: true, name: true, username: true, image: true, bio: true,
-      createdAt: true, isVerified: true,
-      userAchievements: {
-        where: { status: { in: ["EARNED", "PENDING"] } },
-        orderBy: { createdAt: "desc" },
-        include: {
-          achievement: {
-            include: { pack: { select: { name: true, color: true } } },
+  const [user, friendship, friendshipsRaw, purchasedPacksRaw] = await Promise.all([
+    db.user.findUnique({
+      where: { id, deletedAt: null, isBanned: false },
+      select: {
+        id: true, name: true, username: true, image: true, bio: true,
+        createdAt: true, isVerified: true,
+        userAchievements: {
+          where: { status: { in: ["EARNED", "PENDING"] } },
+          orderBy: { createdAt: "desc" },
+          include: {
+            achievement: {
+              include: { pack: { select: { name: true, color: true } } },
+            },
+            validations: { select: { type: true } },
           },
-          validations: { select: { type: true } },
         },
       },
-    },
-  });
+    }),
+    db.friendship.findFirst({
+      where: {
+        OR: [
+          { senderId: currentUserId, receiverId: id },
+          { senderId: id, receiverId: currentUserId },
+        ],
+      },
+    }),
+    db.friendship.findMany({
+      where: {
+        OR: [{ senderId: id }, { receiverId: id }],
+        status: "ACCEPTED",
+      },
+      include: {
+        sender:   { select: { id: true, name: true, username: true, image: true } },
+        receiver: { select: { id: true, name: true, username: true, image: true } },
+      },
+    }),
+    db.purchase.findMany({
+      where: { userId: id, status: "COMPLETED" },
+      include: {
+        pack: {
+          select: {
+            id: true, name: true, icon: true, color: true,
+            _count: { select: { achievements: true } },
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!user) return null;
 
-  const friendship = await db.friendship.findFirst({
-    where: {
-      OR: [
-        { senderId: currentUserId, receiverId: id },
-        { senderId: id, receiverId: currentUserId },
-      ],
-    },
-  });
+  const friends = friendshipsRaw.map((f: typeof friendshipsRaw[number]) =>
+    f.senderId === id ? f.receiver : f.sender
+  );
 
-  const earned = user.userAchievements.filter((ua) => ua.status === "EARNED");
-  const pending = user.userAchievements.filter((ua) => ua.status === "PENDING");
+  const purchasedPacks = purchasedPacksRaw.map((p: typeof purchasedPacksRaw[number]) => p.pack);
 
-  return { user, friendship, earned, pending };
+  const earned = user.userAchievements.filter((ua: typeof user.userAchievements[number]) => ua.status === "EARNED");
+  const pending = user.userAchievements.filter((ua: typeof user.userAchievements[number]) => ua.status === "PENDING");
+
+  return { user, friendship, earned, pending, friends, purchasedPacks };
 }
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -60,6 +88,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       friendship={data.friendship}
       earned={data.earned}
       pending={data.pending}
+      friends={data.friends}
+      purchasedPacks={data.purchasedPacks}
       isOwner={id === currentUserId}
       currentUserId={currentUserId}
     />
