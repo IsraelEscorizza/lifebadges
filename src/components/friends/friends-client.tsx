@@ -83,9 +83,9 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
             Solicitações ({pendingRequests.length})
           </h2>
           {pendingRequests.map((req) => (
-            <Card key={req.id}>
+            <Card key={req.id} className="transition-colors hover:border-border/80">
               <CardContent className="p-3 flex items-center gap-3">
-                <Link href={`/profile/${req.sender.id}`}>
+                <Link href={`/profile/${req.sender.id}`} className="flex-shrink-0">
                   <Avatar>
                     <AvatarImage src={req.sender.image ?? ""} />
                     <AvatarFallback className="bg-secondary text-neon-500 text-xs">
@@ -93,13 +93,13 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
                     </AvatarFallback>
                   </Avatar>
                 </Link>
-                <div className="flex-1 min-w-0">
+                <Link href={`/profile/${req.sender.id}`} className="flex-1 min-w-0">
                   <p className="font-semibold text-sm">{req.sender.name}</p>
                   {req.sender.username && (
                     <p className="text-xs text-muted-foreground">@{req.sender.username}</p>
                   )}
-                </div>
-                <div className="flex gap-1.5">
+                </Link>
+                <div className="flex gap-1.5 flex-shrink-0">
                   <Button
                     size="sm"
                     variant="neon"
@@ -139,27 +139,25 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
             Seus amigos ({filteredFriends.length})
           </h2>
           {filteredFriends.map((friend) => (
-            <Card key={friend.id}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <Link href={`/profile/${friend.id}`}>
-                  <Avatar>
+            <Link key={friend.id} href={`/profile/${friend.id}`} className="block group">
+              <Card className="transition-colors group-hover:border-border/80 group-active:scale-[0.99]">
+                <CardContent className="p-3 flex items-center gap-3">
+                  <Avatar className="flex-shrink-0">
                     <AvatarImage src={friend.image ?? ""} />
                     <AvatarFallback className="bg-secondary text-neon-500 text-xs">
                       {friend.name?.[0]}
                     </AvatarFallback>
                   </Avatar>
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm">{friend.name}</p>
-                  {friend.username && (
-                    <p className="text-xs text-muted-foreground">@{friend.username}</p>
-                  )}
-                </div>
-                <Link href={`/profile/${friend.id}`}>
-                  <Button size="sm" variant="ghost" className="text-muted-foreground">Ver perfil</Button>
-                </Link>
-              </CardContent>
-            </Card>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm">{friend.name}</p>
+                    {friend.username && (
+                      <p className="text-xs text-muted-foreground">@{friend.username}</p>
+                    )}
+                  </div>
+                  <UserCheck className="h-4 w-4 text-muted-foreground flex-shrink-0 group-hover:text-neon transition-colors" strokeWidth={1.5} />
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : friends.length === 0 ? (
@@ -178,31 +176,31 @@ export function FriendsClient({ friends, pendingRequests, suggestions, currentUs
             Sugestões
           </h2>
           {suggestions.map((user) => (
-            <Card key={user.id}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <Link href={`/profile/${user.id}`}>
-                  <Avatar>
+            <Link key={user.id} href={`/profile/${user.id}`} className="block group">
+              <Card className="transition-colors group-hover:border-border/80 group-active:scale-[0.99]">
+                <CardContent className="p-3 flex items-center gap-3">
+                  <Avatar className="flex-shrink-0">
                     <AvatarImage src={user.image ?? ""} />
                     <AvatarFallback className="bg-secondary text-xs">{user.name?.[0]}</AvatarFallback>
                   </Avatar>
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm">{user.name}</p>
-                  {user.username && (
-                    <p className="text-xs text-muted-foreground">@{user.username}</p>
-                  )}
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5"
-                  onClick={() => sendRequest(user.id)}
-                  disabled={isPending}
-                >
-                  <UserPlus className="h-3.5 w-3.5" /> Adicionar
-                </Button>
-              </CardContent>
-            </Card>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm">{user.name}</p>
+                    {user.username && (
+                      <p className="text-xs text-muted-foreground">@{user.username}</p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 flex-shrink-0"
+                    onClick={(e) => { e.preventDefault(); sendRequest(user.id); }}
+                    disabled={isPending}
+                  >
+                    <UserPlus className="h-3.5 w-3.5" strokeWidth={1.5} /> Adicionar
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

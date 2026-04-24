@@ -4,12 +4,14 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { Save, User, Lock, Shield } from "lucide-react";
+import { Save, User, Lock, Shield, Palette, Check } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useTheme, THEMES, type Theme } from "@/components/providers/theme-provider";
+import { cn } from "@/lib/utils";
 
 interface Props {
   user: {
@@ -27,6 +29,7 @@ export function SettingsClient({ user }: Props) {
   const router = useRouter();
   const { update } = useSession();
   const [isPending, startTransition] = useTransition();
+  const { theme, setTheme } = useTheme();
 
   const [form, setForm] = useState({
     name: user.name ?? "",
@@ -144,8 +147,50 @@ export function SettingsClient({ user }: Props) {
         </CardContent>
       </Card>
 
+      {/* Theme selector */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Palette className="h-4 w-4" strokeWidth={1.5} /> Aparência
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground mb-3">Escolha o tema de cores do app</p>
+          <div className="grid grid-cols-5 gap-2">
+            {THEMES.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id as Theme)}
+                className={cn(
+                  "group flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 transition-all",
+                  theme === t.id
+                    ? "border-neon bg-neon/5"
+                    : "border-border hover:border-muted-foreground/50"
+                )}
+              >
+                {/* Color preview */}
+                <div
+                  className="w-8 h-8 rounded-full relative flex items-center justify-center"
+                  style={{ backgroundColor: t.bg, border: `2px solid ${t.primary}` }}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: t.primary }} />
+                  {theme === t.id && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Check className="h-3.5 w-3.5" style={{ color: t.primary }} strokeWidth={2.5} />
+                    </div>
+                  )}
+                </div>
+                <span className="text-[9px] font-medium text-center leading-tight text-muted-foreground group-hover:text-foreground transition-colors">
+                  {t.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <Button variant="neon" className="w-full gap-2" onClick={handleSave} loading={isPending}>
-        <Save className="h-4 w-4" /> Salvar alterações
+        <Save className="h-4 w-4" strokeWidth={1.5} /> Salvar alterações
       </Button>
     </div>
   );

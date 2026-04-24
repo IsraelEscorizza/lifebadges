@@ -30,7 +30,7 @@ export function BottomNav() {
                 active ? "text-neon" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-5 w-5", active && "stroke-[2.5px]")} />
+              <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
               <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );

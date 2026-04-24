@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ValidationButtons } from "@/components/achievements/validation-buttons";
-import { Trophy, Users, UserPlus, Sparkles } from "lucide-react";
+import { Trophy, Users, UserPlus, Sparkles, Star } from "lucide-react";
 
 interface FeedItem {
   id: string;
@@ -177,16 +177,16 @@ function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
 
   return (
     <div className="snap-start flex-shrink-0 w-36 bg-secondary border border-border rounded-xl p-3 flex flex-col items-center gap-2 text-center">
-      <Link href={`/profile/${user.id}`}>
+      <Link href={`/profile/${user.id}`} className="flex flex-col items-center gap-2">
         <Avatar className="h-12 w-12">
           <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
           <AvatarFallback className="bg-neon/10 text-neon text-xs">{initials}</AvatarFallback>
         </Avatar>
+        <div>
+          <p className="font-semibold text-xs text-white truncate max-w-[112px]">{user.name ?? user.username}</p>
+          <p className="text-[10px] text-white/50">{user._count.userAchievements} conquistas</p>
+        </div>
       </Link>
-      <div>
-        <p className="font-semibold text-xs text-white truncate max-w-[112px]">{user.name ?? user.username}</p>
-        <p className="text-[10px] text-white/50">{user._count.userAchievements} conquistas</p>
-      </div>
       {sent ? (
         <span className="text-xs text-neon font-semibold">Pedido enviado ✓</span>
       ) : (
@@ -206,7 +206,7 @@ function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
 function EmptyFeed({ hasFriends }: { hasFriends: boolean }) {
   return (
     <div className="mt-8 text-center space-y-3">
-      <div className="text-6xl">🏆</div>
+      <Trophy className="h-14 w-14 mx-auto text-muted-foreground/40" strokeWidth={1} />
       <h2 className="text-xl font-bold">Seu feed está vazio</h2>
       <p className="text-muted-foreground text-sm max-w-xs mx-auto">
         {hasFriends
@@ -260,7 +260,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
             </p>
           </div>
           {item.status === "EARNED" && (
-            <span className="text-neon text-lg animate-neon-pulse">🏆</span>
+            <Trophy className="h-5 w-5 text-neon animate-neon-pulse flex-shrink-0" strokeWidth={1.5} />
           )}
         </div>
 
@@ -304,7 +304,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
 
         {item.status === "EARNED" && (
           <div className="flex items-center gap-2 text-sm font-semibold text-neon-500 bg-secondary rounded-lg px-3 py-2">
-            <Trophy className="h-4 w-4" />
+            <Trophy className="h-4 w-4" strokeWidth={1.5} />
             Troféu conquistado! Validado por {validates.length} pessoas.
           </div>
         )}

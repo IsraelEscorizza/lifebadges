@@ -22,18 +22,11 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // neon = primary accent — adapts to the active theme
         neon: {
-          DEFAULT: "#00d4ff",
-          50:  "#e0faff",
-          100: "#b3f4ff",
-          200: "#66e8ff",
-          300: "#1adcff",
-          400: "#00d4ff",
-          500: "#00b8d9",
-          600: "#0090aa",
-          700: "#006880",
-          800: "#004455",
-          900: "#00202a",
+          DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+          300:     "hsl(var(--primary) / 0.75)",
+          500:     "hsl(var(--primary) / <alpha-value>)",
         },
       },
       borderRadius: {

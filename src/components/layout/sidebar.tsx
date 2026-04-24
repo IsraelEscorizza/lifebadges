@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Trophy, Users, ShoppingBag,
-  Bell, Settings, User as UserIcon, LogOut, UsersRound,
+  Bell, Settings, User as UserIcon, LogOut, UsersRound, Gem,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export function Sidebar({ user }: SidebarProps) {
       {/* Logo */}
       <div className="px-5 py-6">
         <Link href="/feed" className="flex items-center gap-2.5 font-black text-xl text-neon">
-          <span className="text-3xl">🏆</span>
+          <Gem className="h-6 w-6 flex-shrink-0" strokeWidth={1.5} />
           <span>LifeBadges</span>
         </Link>
       </div>
@@ -54,7 +54,7 @@ export function Sidebar({ user }: SidebarProps) {
                   : "text-white/60 hover:text-white hover:bg-white/5"
               )}
             >
-              <Icon className={cn("h-5 w-5 flex-shrink-0", active && "stroke-[2.5px]")} />
+              <Icon className={cn("h-5 w-5 flex-shrink-0")} strokeWidth={active ? 2 : 1.5} />
               {label}
               {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-neon" />}
             </Link>
@@ -68,21 +68,21 @@ export function Sidebar({ user }: SidebarProps) {
           href={`/profile/${user?.id}`}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
         >
-          <UserIcon className="h-5 w-5 flex-shrink-0" />
+          <UserIcon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
           Meu Perfil
         </Link>
         <Link
           href="/settings"
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
         >
-          <Settings className="h-5 w-5 flex-shrink-0" />
+          <Settings className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
           Configurações
         </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-red-400/5 transition-colors"
         >
-          <LogOut className="h-5 w-5 flex-shrink-0" />
+          <LogOut className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
           Sair
         </button>
 
