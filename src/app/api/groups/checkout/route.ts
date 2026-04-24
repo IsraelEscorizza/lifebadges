@@ -35,10 +35,6 @@ export async function POST(req: NextRequest) {
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card", "pix"],
-    payment_method_options: {
-      pix: { expires_after_seconds: 3600 },
-    },
     line_items: [
       {
         price_data: {

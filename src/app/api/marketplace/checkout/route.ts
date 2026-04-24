@@ -47,10 +47,6 @@ export async function POST(req: NextRequest) {
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card", "pix"],
-      payment_method_options: {
-        pix: { expires_after_seconds: 3600 }, // Pix expira em 1h
-      },
       line_items: [
         {
           price_data: {
@@ -84,7 +80,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
-    console.error("[checkout]", error);
-    return NextResponse.json({ message: "Erro ao criar sessão de pagamento." }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("[checkout] Stripe error:", msg);
+    return NextResponse.json({ message: `Erro ao criar sessão de pagamento: ${msg}` }, { status: 500 });
   }
 }
