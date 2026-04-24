@@ -23,9 +23,14 @@ const getPacks = unstable_cache(
   { revalidate: 3600 }
 );
 
-export default async function MarketplacePage() {
+export default async function MarketplacePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string; pack?: string; canceled?: string }>;
+}) {
   const session = await auth();
   const userId = session!.user!.id as string;
+  const params = await searchParams;
 
   const [packs, purchases] = await Promise.all([
     getPacks(),
@@ -36,5 +41,13 @@ export default async function MarketplacePage() {
   ]);
 
   const purchasedPackIds = new Set(purchases.map((p) => p.packId));
-  return <MarketplaceClient packs={packs} purchasedPackIds={purchasedPackIds} />;
+
+  return (
+    <MarketplaceClient
+      packs={packs}
+      purchasedPackIds={purchasedPackIds}
+      justPurchasedPackId={params.success === "1" ? (params.pack ?? null) : null}
+      canceled={params.canceled === "1"}
+    />
+  );
 }

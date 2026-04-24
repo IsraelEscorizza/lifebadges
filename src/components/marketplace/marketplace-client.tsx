@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { ShoppingBag, CheckCircle, Lock, ChevronDown, ChevronUp } from "lucide-react";
+import { ShoppingBag, CheckCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { rarityConfig } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -30,12 +31,66 @@ interface Pack {
 interface Props {
   packs: Pack[];
   purchasedPackIds: Set<string>;
+  justPurchasedPackId: string | null;
+  canceled: boolean;
 }
 
-export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
-  const [expandedPack, setExpandedPack] = useState<string | null>(null);
+export function MarketplaceClient({ packs, purchasedPackIds, justPurchasedPackId, canceled }: Props) {
+  const router = useRouter();
+  const [expandedPack, setExpandedPack] = useState<string | null>(justPurchasedPackId);
   const [isPending, startTransition] = useTransition();
   const [loadingPackId, setLoadingPackId] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+
+  // Handle post-Stripe redirect feedback and auto-refresh
+  useEffect(() => {
+    if (justPurchasedPackId) {
+      // Pack already confirmed (webhook already fired before redirect)
+      if (purchasedPackIds.has(justPurchasedPackId)) {
+        toast.success("Pack desbloqueado! Suas conquistas estão disponíveis. 🎉");
+        router.replace("/marketplace");
+        return;
+      }
+
+      // Webhook not yet fired — show confirming state and poll with refresh
+      setConfirming(true);
+      toast.loading("Confirmando pagamento…", { id: "confirming" });
+
+      let attempts = 0;
+      const maxAttempts = 8;
+
+      const interval = setInterval(() => {
+        attempts++;
+        router.refresh();
+
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          toast.dismiss("confirming");
+          setConfirming(false);
+          toast.success("Pagamento recebido! O pack será desbloqueado em instantes.", { duration: 6000 });
+          router.replace("/marketplace");
+        }
+      }, 2000);
+
+      return () => clearInterval(interval);
+    }
+
+    if (canceled) {
+      toast.error("Pagamento cancelado. Tente novamente quando quiser.");
+      router.replace("/marketplace");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Detect when the refresh brings the purchased pack in
+  useEffect(() => {
+    if (confirming && justPurchasedPackId && purchasedPackIds.has(justPurchasedPackId)) {
+      toast.dismiss("confirming");
+      setConfirming(false);
+      toast.success("Pack desbloqueado! Suas conquistas estão disponíveis. 🎉");
+      router.replace("/marketplace");
+    }
+  }, [confirming, justPurchasedPackId, purchasedPackIds, router]);
 
   function handlePurchase(packId: string) {
     setLoadingPackId(packId);
@@ -53,7 +108,6 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
           return;
         }
 
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } catch {
         toast.error("Erro de conexão. Tente novamente.");
@@ -80,16 +134,29 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
         <p className="text-sm text-muted-foreground">Desbloqueie novos conjuntos de conquistas</p>
       </div>
 
+      {/* Confirming banner */}
+      {confirming && (
+        <div className="flex items-center gap-3 p-4 rounded-xl border border-neon/30 bg-neon/5">
+          <Loader2 className="h-5 w-5 text-neon animate-spin flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-neon">Confirmando seu pagamento…</p>
+            <p className="text-xs text-muted-foreground">Aguarde enquanto processamos. Isso leva alguns segundos.</p>
+          </div>
+        </div>
+      )}
+
       {packs.map((pack) => {
         const isPurchased = purchasedPackIds.has(pack.id);
-        const isExpanded = expandedPack === pack.id;
+        const isExpanded  = expandedPack === pack.id;
+        const isJustBought = justPurchasedPackId === pack.id;
 
         return (
           <Card
             key={pack.id}
             className={cn(
               "overflow-hidden transition-all",
-              isPurchased && "border-green-200"
+              isPurchased && "border-green-500/30",
+              isJustBought && confirming && "border-neon/40 ring-1 ring-neon/20"
             )}
           >
             {/* Pack banner */}
@@ -111,7 +178,7 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
             <CardContent className="p-4 space-y-3">
               <p className="text-sm text-muted-foreground">{pack.description}</p>
 
-              {/* Achievement preview */}
+              {/* Achievement preview toggle */}
               <button
                 className="flex items-center justify-between w-full text-sm font-semibold"
                 onClick={() => setExpandedPack(isExpanded ? null : pack.id)}
@@ -124,7 +191,6 @@ export function MarketplaceClient({ packs, purchasedPackIds }: Props) {
                 <div className="grid grid-cols-2 gap-2">
                   {pack.achievements.map((ach) => {
                     const rarity = rarityConfig[ach.rarity as keyof typeof rarityConfig];
-                    // Show name + icon for COMMON and UNCOMMON even when locked
                     const isVisible = isPurchased || ach.rarity === "COMMON" || ach.rarity === "UNCOMMON";
                     return (
                       <div
