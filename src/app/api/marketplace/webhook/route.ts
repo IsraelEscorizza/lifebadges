@@ -30,8 +30,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid signature." }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
+  // checkout.session.completed  → cartão (pagamento imediato)
+  // checkout.session.async_payment_succeeded → Pix (pagamento assíncrono)
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
     const session = event.data.object as Stripe.Checkout.Session;
+
+    // For Pix, payment_status may still be "unpaid" on .completed — only process when paid
+    if (event.type === "checkout.session.completed" && session.payment_status !== "paid") {
+      return NextResponse.json({ received: true }); // Pix pending, wait for async event
+    }
     const meta = session.metadata ?? {};
 
     // ── Group creation ──────────────────────────────────────────
