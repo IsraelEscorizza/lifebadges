@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Trophy, Lock, CheckCircle, Clock, ShoppingBag } from "lucide-react";
+import { Lock, CheckCircle, Clock, ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ClaimAchievementDialog } from "@/components/achievements/claim-dialog";
-import { rarityConfig, categoryConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
+import { rarityConfig, VALIDATION_THRESHOLD } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { BackButton } from "@/components/ui/back-button";
 
@@ -43,11 +43,14 @@ interface Props {
 }
 
 export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props) {
-  const [selectedPackId, setSelectedPackId] = useState<string>(packs[0]?.id ?? "");
+  // Only show unlocked packs in tabs
+  const unlockedPacks = packs.filter((p) => unlockedPackIds.has(p.id));
+  const lockedCount = packs.length - unlockedPacks.length;
+
+  const [selectedPackId, setSelectedPackId] = useState<string>(unlockedPacks[0]?.id ?? "");
   const [claimTarget, setClaimTarget] = useState<Achievement | null>(null);
 
-  const selectedPack = packs.find((p) => p.id === selectedPackId);
-  const isUnlocked = selectedPack ? unlockedPackIds.has(selectedPack.id) : false;
+  const selectedPack = unlockedPacks.find((p) => p.id === selectedPackId);
 
   const earnedCount = selectedPack?.achievements.filter(
     (a) => claimedMap.get(a.id)?.status === "EARNED"
@@ -57,38 +60,34 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
   return (
     <div className="pt-4 space-y-4">
       <BackButton href="/feed" />
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-black">Conquistas</h1>
-        <Link href="/marketplace">
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <ShoppingBag className="h-4 w-4" /> Loja
-          </Button>
-        </Link>
-      </div>
+      <h1 className="text-xl font-black">Conquistas</h1>
 
-      {/* Pack tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-        {packs.map((pack) => (
+      {/* Pack tabs — only unlocked packs + "more" button */}
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide items-center">
+        {unlockedPacks.map((pack) => (
           <button
             key={pack.id}
             onClick={() => setSelectedPackId(pack.id)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border",
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border flex-shrink-0",
               selectedPackId === pack.id
                 ? "border-transparent text-white shadow-sm"
-                : "border-border bg-background text-muted-foreground hover:text-foreground",
-              !unlockedPackIds.has(pack.id) && "opacity-60"
+                : "border-border bg-background text-muted-foreground hover:text-foreground"
             )}
-            style={
-              selectedPackId === pack.id
-                ? { backgroundColor: pack.color }
-                : {}
-            }
+            style={selectedPackId === pack.id ? { backgroundColor: pack.color } : {}}
           >
             {pack.icon} {pack.name}
-            {!unlockedPackIds.has(pack.id) && <Lock className="h-3 w-3" />}
           </button>
         ))}
+
+        {/* "Get more packs" button */}
+        <Link
+          href="/marketplace"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-neon/50 transition-all"
+        >
+          <ShoppingBag className="h-3.5 w-3.5" />
+          {lockedCount > 0 ? `+${lockedCount} packs` : "Loja"}
+        </Link>
       </div>
 
       {/* Pack header */}
@@ -110,25 +109,25 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
         </div>
       )}
 
-      {/* Locked pack */}
-      {selectedPack && !isUnlocked && (
-        <div className="text-center py-6 space-y-3">
+      {/* Empty state if no unlocked packs */}
+      {unlockedPacks.length === 0 && (
+        <div className="text-center py-10 space-y-3">
           <Lock className="h-10 w-10 mx-auto text-muted-foreground" />
-          <p className="font-semibold">Pack bloqueado</p>
+          <p className="font-semibold">Nenhum pack desbloqueado</p>
           <p className="text-sm text-muted-foreground">
-            Adquira este pack na loja para desbloquear as conquistas.
+            Adquira um pack na loja para começar a colecionar conquistas.
           </p>
           <Link href="/marketplace">
             <Button variant="neon" className="gap-2">
               <ShoppingBag className="h-4 w-4" />
-              Ver na loja · R$ {selectedPack.price.toFixed(2).replace(".", ",")}
+              Ver na loja
             </Button>
           </Link>
         </div>
       )}
 
       {/* Achievement grid */}
-      {selectedPack && isUnlocked && (
+      {selectedPack && (
         <div className="grid grid-cols-1 gap-3">
           {selectedPack.achievements.map((achievement) => {
             const claimed = claimedMap.get(achievement.id);
