@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",
 });
 
-const GROUP_PRICE_BRL = 1490; // R$14,90 in centavos
+const GROUP_PRICE_BRL = 499; // R$4,99 in centavos
 
 const schema = z.object({
   name: z.string().min(3, "Nome muito curto").max(40, "Nome muito longo").trim(),

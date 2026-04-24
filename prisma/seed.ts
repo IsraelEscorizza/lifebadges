@@ -69,7 +69,7 @@ async function main() {
   const pack2 = await upsertPack({
     slug: "saude-bem-estar", name: "Saúde & Bem-Estar",
     description: "Para quem cuida do corpo e da mente. Mostre que disciplina é conquista!",
-    icon: "💪", color: "#10b981", isBase: false, price: 9.9, sortOrder: 2,
+    icon: "💪", color: "#10b981", isBase: false, price: 1.99, sortOrder: 2,
   });
 
   await upsertAchievements(pack2.id, [
@@ -98,7 +98,7 @@ async function main() {
   const pack3 = await upsertPack({
     slug: "aventuras-viagens", name: "Aventuras & Viagens",
     description: "Para quem coleciona passaportes, trilhas e experiências ao redor do mundo.",
-    icon: "🌍", color: "#3b82f6", isBase: false, price: 9.9, sortOrder: 3,
+    icon: "🌍", color: "#3b82f6", isBase: false, price: 1.99, sortOrder: 3,
   });
 
   await upsertAchievements(pack3.id, [
@@ -125,7 +125,7 @@ async function main() {
   const pack4 = await upsertPack({
     slug: "carreira-dinheiro", name: "Carreira & Dinheiro",
     description: "Conquistas profissionais e financeiras que mostram sua evolução.",
-    icon: "💰", color: "#8b5cf6", isBase: false, price: 9.9, sortOrder: 4,
+    icon: "💰", color: "#8b5cf6", isBase: false, price: 1.99, sortOrder: 4,
   });
 
   await upsertAchievements(pack4.id, [
@@ -151,7 +151,7 @@ async function main() {
   const pack5 = await upsertPack({
     slug: "cultura-artes", name: "Cultura & Artes",
     description: "Para quem cria, aprende idiomas, lê muito e se expressa através da arte.",
-    icon: "🎨", color: "#ec4899", isBase: false, price: 9.9, sortOrder: 5,
+    icon: "🎨", color: "#ec4899", isBase: false, price: 1.99, sortOrder: 5,
   });
 
   await upsertAchievements(pack5.id, [
@@ -176,7 +176,7 @@ async function main() {
   const pack6 = await upsertPack({
     slug: "esportes-adrenalina", name: "Esportes & Adrenalina",
     description: "Para quem vive pelo esporte e ama superar limites.",
-    icon: "⚽", color: "#ef4444", isBase: false, price: 9.9, sortOrder: 6,
+    icon: "⚽", color: "#ef4444", isBase: false, price: 1.99, sortOrder: 6,
   });
 
   await upsertAchievements(pack6.id, [
