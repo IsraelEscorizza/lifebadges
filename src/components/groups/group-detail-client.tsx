@@ -183,60 +183,59 @@ export function GroupDetailClient({
             leaderboard.map((entry, i) => {
               const isSelf = entry.id === currentUserId;
               return (
-                <Card
-                  key={entry.id}
-                  className={cn(
-                    "transition-colors",
-                    i === 0 && "border-yellow-500/40 bg-yellow-500/5",
-                    i === 1 && "border-gray-400/40",
-                    i === 2 && "border-amber-600/40",
-                    isSelf && "border-neon/30"
-                  )}
-                >
-                  <CardContent className="p-3 flex items-center gap-3">
-                    {/* Position */}
-                    <div className="w-8 text-center flex-shrink-0">
-                      {i < 3 ? (
-                        <span className="text-xl">{MEDALS[i]}</span>
-                      ) : (
-                        <span className="text-sm font-bold text-muted-foreground">{i + 1}º</span>
-                      )}
-                    </div>
+                <Link key={entry.id} href={`/profile/${entry.id}`} className="block group">
+                  <Card
+                    className={cn(
+                      "transition-colors group-hover:border-border/80",
+                      i === 0 && "border-yellow-500/40 bg-yellow-500/5",
+                      i === 1 && "border-gray-400/40",
+                      i === 2 && "border-amber-600/40",
+                      isSelf && "border-neon/30"
+                    )}
+                  >
+                    <CardContent className="p-3 flex items-center gap-3">
+                      {/* Position */}
+                      <div className="w-8 text-center flex-shrink-0">
+                        {i < 3 ? (
+                          <span className="text-xl">{MEDALS[i]}</span>
+                        ) : (
+                          <span className="text-sm font-bold text-muted-foreground">{i + 1}º</span>
+                        )}
+                      </div>
 
-                    <Link href={`/profile/${entry.id}`} className="flex-shrink-0">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-10 w-10 flex-shrink-0">
                         <AvatarImage src={entry.image ?? ""} alt={entry.name ?? ""} />
                         <AvatarFallback className="text-xs bg-neon/10 text-neon">
                           {entry.name?.split(" ").map((n) => n[0]).slice(0, 2).join("") ?? "?"}
                         </AvatarFallback>
                       </Avatar>
-                    </Link>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <Link href={`/profile/${entry.id}`} className="font-semibold text-sm hover:underline truncate">
-                          {entry.name ?? entry.username ?? "Usuário"}
-                        </Link>
-                        {entry.role === "OWNER" && (
-                          <Crown className="h-3.5 w-3.5 text-neon flex-shrink-0" />
-                        )}
-                        {isSelf && (
-                          <span className="text-[10px] font-bold text-neon bg-neon/10 px-1.5 py-0.5 rounded-full">você</span>
-                        )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-sm truncate">
+                            {entry.name ?? entry.username ?? "Usuário"}
+                          </span>
+                          {entry.role === "OWNER" && (
+                            <Crown className="h-3.5 w-3.5 text-neon flex-shrink-0" />
+                          )}
+                          {isSelf && (
+                            <span className="text-[10px] font-bold text-neon bg-neon/10 px-1.5 py-0.5 rounded-full">você</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {entry.recentTrophies.map((icon, j) => (
+                            <span key={j} className="text-xs">{icon}</span>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {entry.recentTrophies.map((icon, j) => (
-                          <span key={j} className="text-xs">{icon}</span>
-                        ))}
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      <Trophy className="h-4 w-4 text-neon" />
-                      <span className="font-black text-sm text-neon">{entry.earned}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <Trophy className="h-4 w-4 text-neon" />
+                        <span className="font-black text-sm text-neon">{entry.earned}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })
           )}
@@ -247,37 +246,37 @@ export function GroupDetailClient({
       {tab === "membros" && (
         <div className="space-y-2">
           {leaderboard.map((member) => (
-            <Card key={member.id}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <Link href={`/profile/${member.id}`}>
-                  <Avatar className="h-10 w-10">
+            <Link key={member.id} href={`/profile/${member.id}`} className="block group">
+              <Card className="transition-colors group-hover:border-border/80">
+                <CardContent className="p-3 flex items-center gap-3">
+                  <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage src={member.image ?? ""} />
                     <AvatarFallback className="text-xs bg-neon/10 text-neon">
                       {member.name?.split(" ").map((n) => n[0]).slice(0, 2).join("") ?? "?"}
                     </AvatarFallback>
                   </Avatar>
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-sm truncate">{member.name ?? member.username}</span>
-                    {member.role === "OWNER" && <Crown className="h-3.5 w-3.5 text-neon flex-shrink-0" />}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-sm truncate">{member.name ?? member.username}</span>
+                      {member.role === "OWNER" && <Crown className="h-3.5 w-3.5 text-neon flex-shrink-0" />}
+                    </div>
+                    {member.username && (
+                      <p className="text-xs text-muted-foreground">@{member.username}</p>
+                    )}
                   </div>
-                  {member.username && (
-                    <p className="text-xs text-muted-foreground">@{member.username}</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Trophy className="h-3.5 w-3.5" />
-                  {member.earned}
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Trophy className="h-3.5 w-3.5" />
+                    {member.earned}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
 
           {/* Pending invites */}
           {pendingInvites.length > 0 && (
             <div className="pt-2">
-              <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                 Convites pendentes
               </p>
               {pendingInvites.map((inv) => (

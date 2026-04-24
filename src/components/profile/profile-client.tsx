@@ -144,11 +144,12 @@ export function ProfileClient({
           )}
         </div>
 
-        {/* Stats bar */}
+        {/* Stats bar — each pill switches to the corresponding tab */}
         <div className="flex justify-center gap-6">
-          <StatPill label="Troféus" value={earned.length} accent />
-          <StatPill label="Amigos" value={friends.length} />
-          <StatPill label="Packs" value={purchasedPacks.length} />
+          <StatPill label="Troféus"  value={earned.length}          accent   onClick={() => setTab("earned")} />
+          <StatPill label="Pendentes" value={pending.length}                  onClick={() => setTab("pending")} />
+          <StatPill label="Amigos"   value={friends.length}                   onClick={() => setTab("friends")} />
+          <StatPill label="Packs"    value={purchasedPacks.length}            onClick={() => setTab("packs")} />
         </div>
 
         {/* Action buttons */}
@@ -215,12 +216,20 @@ export function ProfileClient({
   );
 }
 
-function StatPill({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+function StatPill({ label, value, accent, onClick }: {
+  label: string; value: number; accent?: boolean; onClick?: () => void;
+}) {
   return (
-    <div className="text-center">
+    <button
+      onClick={onClick}
+      className={cn(
+        "text-center transition-opacity",
+        onClick ? "hover:opacity-70 cursor-pointer" : "cursor-default"
+      )}
+    >
       <p className={cn("text-2xl font-black", accent ? "text-neon" : "text-foreground")}>{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
-    </div>
+    </button>
   );
 }
 

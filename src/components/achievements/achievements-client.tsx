@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Lock, CheckCircle, Clock, ShoppingBag } from "lucide-react";
+import { Lock, CheckCircle, Clock, ShoppingBag, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -144,29 +144,26 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-xl border transition-all",
                   isEarned
-                    ? "border-neon/30 bg-secondary"
+                    ? "border-neon/20 bg-secondary"
                     : isPending
-                    ? "border-blue-200 bg-blue-50"
+                    ? "border-border bg-secondary/40"
                     : "border-border bg-card hover:bg-accent cursor-pointer"
                 )}
                 onClick={() => {
                   if (!claimed) setClaimTarget(achievement);
                 }}
               >
+                {/* Achievement icon */}
                 <div
-                  className={cn(
-                    "h-12 w-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 relative",
-                    isEarned ? "animate-neon-pulse" : ""
-                  )}
-                  style={{
-                    backgroundColor: isEarned
-                      ? "#fef3c7"
-                      : `${selectedPack.color}20`,
-                  }}
+                  className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 relative"
+                  style={{ backgroundColor: `${selectedPack.color}20` }}
                 >
                   {achievement.icon}
                   {isEarned && (
-                    <span className="absolute -top-1 -right-1 text-base">🏆</span>
+                    <Trophy
+                      className="absolute -top-1 -right-1 h-4 w-4 drop-shadow-sm"
+                      style={{ color: rarity.trophyColor }}
+                    />
                   )}
                 </div>
 
@@ -183,7 +180,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
                   <p className="text-xs text-muted-foreground truncate">{achievement.description}</p>
                   {isPending && (
                     <div className="mt-1.5 space-y-0.5">
-                      <p className="text-[10px] text-blue-600 font-medium">
+                      <p className="text-[10px] text-muted-foreground">
                         {claimed?.validates}/{VALIDATION_THRESHOLD} validações
                       </p>
                       <Progress value={progress} className="h-1" />
@@ -193,7 +190,7 @@ export function AchievementsClient({ packs, unlockedPackIds, claimedMap }: Props
 
                 <div className="flex-shrink-0">
                   {isEarned && <CheckCircle className="h-5 w-5 text-neon" />}
-                  {isPending && <Clock className="h-5 w-5 text-blue-500" />}
+                  {isPending && <Clock className="h-5 w-5 text-muted-foreground" />}
                   {!claimed && (
                     <div className="text-xs text-muted-foreground border border-dashed border-border rounded-lg px-2 py-1">
                       Registrar
