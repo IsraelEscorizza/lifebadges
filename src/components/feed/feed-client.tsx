@@ -10,9 +10,11 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ValidationButtons } from "@/components/achievements/validation-buttons";
-import { Trophy, Users, UserPlus, Sparkles, CalendarDays } from "lucide-react";
+import { Trophy, Users, UserPlus, Sparkles, CalendarDays, ShoppingBag } from "lucide-react";
 
-interface FeedItem {
+/* ─── Types ──────────────────────────────────────────────────── */
+
+interface AchievementData {
   id: string;
   status: string;
   note: string | null;
@@ -20,51 +22,48 @@ interface FeedItem {
   earnedAt: Date | null;
   user: { id: string; name: string | null; username: string | null; image: string | null };
   achievement: {
-    name: string;
-    icon: string;
-    description: string;
-    rarity: string;
+    name: string; icon: string; description: string; rarity: string;
     pack: { name: string; icon: string; color: string };
   };
   validations: Array<{
-    id: string;
-    type: string;
+    id: string; type: string;
     validator: { id: string; name: string | null; image: string | null };
   }>;
 }
 
-interface FriendSuggestion {
+interface PurchaseData {
   id: string;
-  name: string | null;
-  username: string | null;
-  image: string | null;
+  createdAt: Date;
+  user: { id: string; name: string | null; username: string | null; image: string | null };
+  pack: { id: string; name: string; icon: string; color: string; description: string; _count: { achievements: number } };
+}
+
+type FeedEvent =
+  | { type: "achievement"; createdAt: Date; data: AchievementData }
+  | { type: "purchase";    createdAt: Date; data: PurchaseData };
+
+interface FriendSuggestion {
+  id: string; name: string | null; username: string | null; image: string | null;
   _count: { userAchievements: number };
 }
 
 interface AchievementSuggestion {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  rarity: string;
-  packName: string;
-  packIcon: string;
+  id: string; name: string; icon: string; description: string;
+  rarity: string; packName: string; packIcon: string;
 }
 
 interface FeedClientProps {
-  items: FeedItem[];
+  feedEvents: FeedEvent[];
   currentUserId: string;
   friendSuggestions: FriendSuggestion[];
   achievementSuggestions: AchievementSuggestion[];
   friendIds: string[];
 }
 
+/* ─── Main component ──────────────────────────────────────────── */
+
 export function FeedClient({
-  items,
-  currentUserId,
-  friendSuggestions,
-  achievementSuggestions,
-  friendIds,
+  feedEvents, currentUserId, friendSuggestions, achievementSuggestions, friendIds,
 }: FeedClientProps) {
   const hasFriends = friendIds.length > 0;
 
@@ -94,33 +93,33 @@ export function FeedClient({
         </SuggestionSection>
       )}
 
-      {/* Feed */}
-      {items.length === 0 ? (
+      {/* Feed events */}
+      {feedEvents.length === 0 ? (
         <EmptyFeed hasFriends={hasFriends} />
       ) : (
         <>
           {hasFriends && (
             <p className="text-xs text-muted-foreground px-1">
-              Conquistas recentes dos seus amigos e suas
+              Atividades recentes dos seus amigos e suas
             </p>
           )}
-          {items.map((item) => (
-            <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
-          ))}
+          {feedEvents.map((event) =>
+            event.type === "achievement" ? (
+              <AchievementCard key={`ach-${event.data.id}`} item={event.data} currentUserId={currentUserId} />
+            ) : (
+              <PurchaseCard key={`pur-${event.data.id}`} purchase={event.data} currentUserId={currentUserId} />
+            )
+          )}
         </>
       )}
     </div>
   );
 }
 
-function SuggestionSection({
-  title,
-  icon,
-  children,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+/* ─── Suggestion section wrapper ─────────────────────────────── */
+
+function SuggestionSection({ title, icon, children }: {
+  title: string; icon: React.ReactNode; children: React.ReactNode;
 }) {
   return (
     <div className="space-y-2">
@@ -132,6 +131,8 @@ function SuggestionSection({
     </div>
   );
 }
+
+/* ─── Achievement suggestion horizontal card ─────────────────── */
 
 function AchievementSuggestionCard({ achievement }: { achievement: AchievementSuggestion }) {
   const rarity = rarityConfig[achievement.rarity as keyof typeof rarityConfig];
@@ -151,6 +152,8 @@ function AchievementSuggestionCard({ achievement }: { achievement: AchievementSu
     </Link>
   );
 }
+
+/* ─── Friend suggestion horizontal card ──────────────────────── */
 
 function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
   const [sent, setSent] = useState(false);
@@ -203,6 +206,8 @@ function FriendSuggestionCard({ user }: { user: FriendSuggestion }) {
   );
 }
 
+/* ─── Empty feed ─────────────────────────────────────────────── */
+
 function EmptyFeed({ hasFriends }: { hasFriends: boolean }) {
   return (
     <div className="mt-8 text-center space-y-3">
@@ -221,9 +226,7 @@ function EmptyFeed({ hasFriends }: { hasFriends: boolean }) {
         </Link>
         {!hasFriends && (
           <Link href="/friends">
-            <Button size="sm" variant="outline">
-              Adicionar amigos
-            </Button>
+            <Button size="sm" variant="outline">Adicionar amigos</Button>
           </Link>
         )}
       </div>
@@ -231,14 +234,22 @@ function EmptyFeed({ hasFriends }: { hasFriends: boolean }) {
   );
 }
 
-function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: string }) {
+/* ─── Achievement feed card ──────────────────────────────────── */
+
+// Copy variants — more engaging than "conquistou uma conquista"
+function achievementVerb(status: string) {
+  if (status === "EARNED") return "desbloqueou um troféu";
+  return "está conquistando um troféu";
+}
+
+function AchievementCard({ item, currentUserId }: { item: AchievementData; currentUserId: string }) {
   const validates = item.validations.filter((v) => v.type === "VALIDATE");
-  const contests = item.validations.filter((v) => v.type === "CONTEST");
-  const myVote = item.validations.find((v) => v.validator.id === currentUserId);
-  const isOwner = item.user.id === currentUserId;
-  const progress = Math.min((validates.length / VALIDATION_THRESHOLD) * 100, 100);
-  const rarity = rarityConfig[item.achievement.rarity as keyof typeof rarityConfig];
-  const initials = item.user.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "?";
+  const contests  = item.validations.filter((v) => v.type === "CONTEST");
+  const myVote    = item.validations.find((v) => v.validator.id === currentUserId);
+  const isOwner   = item.user.id === currentUserId;
+  const progress  = Math.min((validates.length / VALIDATION_THRESHOLD) * 100, 100);
+  const rarity    = rarityConfig[item.achievement.rarity as keyof typeof rarityConfig];
+  const initials  = item.user.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "?";
 
   return (
     <Card className="overflow-hidden">
@@ -256,18 +267,15 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
               {item.user.name ?? item.user.username}
             </Link>
             <p className="text-xs text-muted-foreground">
-              {item.status === "EARNED" ? "conquistou" : "registrou"} uma conquista · {formatRelativeDate(item.createdAt)}
+              {achievementVerb(item.status)} · {formatRelativeDate(item.createdAt)}
             </p>
           </div>
           {item.status === "EARNED" && (
-            <Trophy
-              className="h-5 w-5 flex-shrink-0"
-              style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}
-            />
+            <Trophy className="h-5 w-5 flex-shrink-0" style={{ color: rarity.trophyColor }} />
           )}
         </div>
 
-        {/* Achievement card */}
+        {/* Achievement block */}
         <div className="flex items-center gap-3 bg-secondary rounded-xl p-3">
           <div
             className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
@@ -286,9 +294,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
           </div>
         </div>
 
-        {item.note && (
-          <p className="text-sm text-muted-foreground italic">"{item.note}"</p>
-        )}
+        {item.note && <p className="text-sm text-muted-foreground italic">"{item.note}"</p>}
 
         {/* Validation progress */}
         {item.status !== "EARNED" && (
@@ -305,13 +311,11 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
           </div>
         )}
 
+        {/* Earned banner */}
         {item.status === "EARNED" && (
           <div className="flex items-center gap-2 text-sm">
-            <Trophy
-              className="h-4 w-4 flex-shrink-0"
-              style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}
-            />
-            <span className="font-semibold" style={{ color: rarityConfig[item.achievement.rarity as keyof typeof rarityConfig].trophyColor }}>
+            <Trophy className="h-4 w-4 flex-shrink-0" style={{ color: rarity.trophyColor }} />
+            <span className="font-semibold" style={{ color: rarity.trophyColor }}>
               Troféu conquistado!
             </span>
             {validates.length > 0 && (
@@ -320,7 +324,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
               </span>
             )}
             {item.earnedAt && (
-              <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+              <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
                 <CalendarDays className="h-3 w-3" />
                 {formatDate(item.earnedAt)}
               </span>
@@ -328,12 +332,9 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
           </div>
         )}
 
-        {/* Validation buttons (only for friends, not self) */}
+        {/* Validation buttons */}
         {!isOwner && item.status === "PENDING" && (
-          <ValidationButtons
-            userAchievementId={item.id}
-            myVote={myVote?.type ?? null}
-          />
+          <ValidationButtons userAchievementId={item.id} myVote={myVote?.type ?? null} />
         )}
 
         {/* Validator avatars */}
@@ -343,7 +344,7 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
               {validates.slice(0, 5).map((v) => (
                 <Avatar key={v.id} className="h-5 w-5 border border-background">
                   <AvatarImage src={v.validator.image ?? ""} />
-                  <AvatarFallback className="text-[8px] bg-green-100 text-green-700">
+                  <AvatarFallback className="text-[8px] bg-secondary">
                     {v.validator.name?.[0]}
                   </AvatarFallback>
                 </Avatar>
@@ -355,6 +356,70 @@ function FeedCard({ item, currentUserId }: { item: FeedItem; currentUserId: stri
                 : `${validates[0].validator.name} validou`}
             </span>
           </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ─── Pack purchase feed card ────────────────────────────────── */
+
+function PurchaseCard({ purchase, currentUserId }: { purchase: PurchaseData; currentUserId: string }) {
+  const isSelf   = purchase.user.id === currentUserId;
+  const initials = purchase.user.name?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() ?? "?";
+
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-4 space-y-3">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <Link href={`/profile/${purchase.user.id}`}>
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={purchase.user.image ?? ""} alt={purchase.user.name ?? ""} />
+              <AvatarFallback className="bg-secondary text-xs">{initials}</AvatarFallback>
+            </Avatar>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <Link href={`/profile/${purchase.user.id}`} className="font-semibold text-sm hover:underline">
+              {purchase.user.name ?? purchase.user.username}
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              desbloqueou um novo pack · {formatRelativeDate(purchase.createdAt)}
+            </p>
+          </div>
+          <ShoppingBag className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+        </div>
+
+        {/* Pack banner */}
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ backgroundColor: `${purchase.pack.color}18` }}
+        >
+          <div
+            className="h-14 flex items-center gap-3 px-4"
+            style={{ backgroundColor: purchase.pack.color }}
+          >
+            <span className="text-2xl">{purchase.pack.icon}</span>
+            <div className="text-white">
+              <p className="font-black text-base leading-tight">{purchase.pack.name}</p>
+              <p className="text-xs opacity-80">{purchase.pack._count.achievements} conquistas incluídas</p>
+            </div>
+          </div>
+          {purchase.pack.description && (
+            <p className="text-xs text-muted-foreground px-4 py-2 leading-relaxed">
+              {purchase.pack.description}
+            </p>
+          )}
+        </div>
+
+        {/* CTA — only show for others, not self */}
+        {!isSelf && (
+          <Link href="/marketplace">
+            <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Ver este pack na loja
+            </Button>
+          </Link>
         )}
       </CardContent>
     </Card>

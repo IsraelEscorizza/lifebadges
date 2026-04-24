@@ -26,9 +26,9 @@ async function getFeedData(userId: string) {
   );
   const feedUserIds = [userId, ...friendIds];
 
-  const [items, friendSuggestions, claimedAchievementIds, paidPacks, purchasedPackIds] =
+  const [items, purchaseItems, friendSuggestions, claimedAchievementIds, paidPacks, purchasedPackIds] =
     await Promise.all([
-      // Feed items
+      // Achievement feed items
       db.userAchievement.findMany({
         where: { userId: { in: feedUserIds } },
         orderBy: { createdAt: "desc" },
@@ -40,6 +40,22 @@ async function getFeedData(userId: string) {
           },
           validations: {
             include: { validator: { select: { id: true, name: true, image: true } } },
+          },
+        },
+      }),
+
+      // Pack purchase feed items
+      db.purchase.findMany({
+        where: { userId: { in: feedUserIds }, status: "COMPLETED" },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: {
+          user: { select: { id: true, name: true, username: true, image: true } },
+          pack: {
+            select: {
+              id: true, name: true, icon: true, color: true, description: true,
+              _count: { select: { achievements: true } },
+            },
           },
         },
       }),
@@ -106,11 +122,19 @@ async function getFeedData(userId: string) {
     .flatMap((p) => p.achievements.map((a) => ({ ...a, packName: p.name, packIcon: p.icon })))
     .slice(0, 5);
 
+  // Merge achievements + purchases into a single chronological feed
+  const achievementEvents = items.map((i) => ({ type: "achievement" as const, createdAt: i.createdAt, data: i }));
+  const purchaseEvents    = purchaseItems.map((p) => ({ type: "purchase" as const, createdAt: p.createdAt, data: p }));
+
+  const feedEvents = [...achievementEvents, ...purchaseEvents]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 40);
+
   // Show free pack modal only if user hasn't claimed yet and packs exist
   const showFreePack = !user?.freePackClaimedAt && paidPacks.length > 0;
 
   return {
-    items,
+    feedEvents,
     friendSuggestions,
     achievementSuggestions,
     paidPacks,
@@ -128,7 +152,7 @@ export default async function FeedPage() {
     <>
       {data.showFreePack && <FirstLoginModal packs={data.paidPacks} />}
       <FeedClient
-        items={data.items}
+        feedEvents={data.feedEvents}
         currentUserId={userId}
         friendSuggestions={data.friendSuggestions}
         achievementSuggestions={data.achievementSuggestions}
