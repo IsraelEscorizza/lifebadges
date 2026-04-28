@@ -11,7 +11,23 @@
       "Bash(gh --version)",
       "Bash(npx vercel *)",
       "Bash(git --version)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(npx create-next-app@latest rift-arena --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Bash(npm run *)",
+      "Bash(gh auth *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git branch *)",
+      "Bash(gh repo *)",
+      "WebSearch",
+      "WebFetch(domain:riftbound.leagueoflegends.com)",
+      "Bash(curl -L -o \"D:/Projetos IA/RiftArena/docs/core-rules.pdf\" \"https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861747d1d4d505b7c14d73aba9749d1c3a209a67.pdf\")",
+      "Bash(curl -L -o \"D:/Projetos IA/RiftArena/docs/tournament-rules.pdf\" \"https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/d77651bcaa7ca5a5b41a0ac0ea8112725a635680.pdf\")",
+      "Bash(where pdftoppm *)",
+      "Bash(where pdftotext *)",
+      "Bash(python -c \"import pypdf\")",
+      "Bash(pdftotext -layout core-rules.pdf core-rules.txt)",
+      "Bash(pdftotext -layout tournament-rules.pdf tournament-rules.txt)"
     ]
   }
 }
